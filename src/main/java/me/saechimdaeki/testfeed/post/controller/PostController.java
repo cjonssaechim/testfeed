@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.saechimdaeki.testfeed.post.service.PostService;
@@ -20,6 +23,7 @@ import me.saechimdaeki.testfeed.post.service.request.PostCreateRequest;
 import me.saechimdaeki.testfeed.post.service.request.PostUpdateRequest;
 import me.saechimdaeki.testfeed.post.service.response.PostResponse;
 
+@Tag(name = "게시글 관리", description = "게시글 CRUD API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/posts")
@@ -27,30 +31,36 @@ public class PostController {
 
 	private final PostService postService;
 
-	//응답값도 통일해야 할 수도
+	@Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
 	@PostMapping
 	public ResponseEntity<PostResponse> createPost(
-		@RequestPart(value = "post") @Valid PostCreateRequest postCreateRequest,
-		@RequestPart(value = "image", required = false) MultipartFile image) {
+		@Parameter(description = "게시글 정보") @RequestPart(value = "post") @Valid PostCreateRequest postCreateRequest,
+		@Parameter(description = "이미지 파일 (선택 사항)") @RequestPart(value = "image", required = false) MultipartFile image) {
 		return ResponseEntity.ok(postService.createPost(postCreateRequest, image));
 	}
 
+	@Operation(summary = "게시글 수정", description = "기존 게시글을 수정합니다.")
 	@PutMapping("/{postId}")
 	public ResponseEntity<Void> updatePost(
-		@PathVariable Long postId,
-		@RequestBody @Valid PostUpdateRequest postUpdateRequest) {
+		@Parameter(description = "수정할 게시글 ID") @PathVariable Long postId,
+		@Parameter(description = "수정할 내용") @RequestBody @Valid PostUpdateRequest postUpdateRequest) {
 		postService.updatePost(postUpdateRequest, postId);
 		return ResponseEntity.ok().build();
 	}
 
+	@Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
 	@DeleteMapping("/{postId}")
-	public ResponseEntity<?> deletePost(@PathVariable Long postId, @RequestParam String username) {
+	public ResponseEntity<?> deletePost(
+		@Parameter(description = "삭제할 게시글 ID") @PathVariable Long postId,
+		@Parameter(description = "작성자 이름") @RequestParam String username) {
 		postService.deletePost(postId, username);
 		return ResponseEntity.noContent().build();
 	}
 
+	@Operation(summary = "게시글 조회", description = "게시글을 조회합니다.")
 	@GetMapping("/{postId}")
-	public ResponseEntity<PostResponse> readPost(@PathVariable Long postId) {
+	public ResponseEntity<PostResponse> readPost(
+		@Parameter(description = "조회할 게시글 ID") @PathVariable Long postId) {
 		return ResponseEntity.ok(postService.readPost(postId));
 	}
 }

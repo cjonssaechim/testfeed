@@ -27,4 +27,5 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseEntity> handle(BaseException e) {
 		return ErrorResponseEntity.toResponseEntity(e.getErrorCode());
 	}
+
 }
