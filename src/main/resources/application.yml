@@ -1,0 +1,40 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+kafka:
+  host: localhost:9092
+  consumer-group: ons-feed
+  topic: feed
+
+image:
+  url: images
+
+---
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/feed
+    username: root
+    password: root
+  config:
+    activate:
+      on-profile: mysql
+
+---
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  config:
+    activate:
+      on-profile: default
+  datasource:
+    driver-class-name: org.h2.Driver
