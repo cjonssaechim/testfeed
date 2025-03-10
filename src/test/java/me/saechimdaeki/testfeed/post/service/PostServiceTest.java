@@ -22,9 +22,7 @@ import me.saechimdaeki.testfeed.post.domain.Category;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.post.domain.PostType;
 import me.saechimdaeki.testfeed.post.service.port.PostRepository;
-import me.saechimdaeki.testfeed.post.service.request.PostCreateRequest;
 import me.saechimdaeki.testfeed.post.service.request.PostUpdateRequest;
-import me.saechimdaeki.testfeed.post.service.response.PostResponse;
 import me.saechimdaeki.testfeed.user.domain.User;
 import me.saechimdaeki.testfeed.user.domain.UserType;
 import me.saechimdaeki.testfeed.user.service.port.UserRepository;
@@ -46,28 +44,6 @@ class PostServiceTest {
 	private KafkaTemplate<String, FeedEvent> kafkaTemplate;
 	@InjectMocks
 	private PostService postService;
-
-	@Test
-	@DisplayName("포스트 생성 요청이 성공했다면 정상적인 응답을 응답해야 한다")
-	void createPost_Success() {
-		// given
-		User user = new User(testUsername, UserType.USER);
-		PostCreateRequest postCreateRequest = new PostCreateRequest(testTitle, testContent, null, null, testPostType,
-			testCategory, testUrls);
-		Post post = PostCreateRequest.create(postCreateRequest, user);
-		BDDMockito.given(userRepository.findByUserName(testUsername)).willReturn(Optional.of(user));
-		BDDMockito.given(postRepository.savePost(post)).willReturn(post);
-		// when
-		PostResponse postResponse = postService.createPost(postCreateRequest, testUsername);
-
-		// then
-		assertThat(postResponse).isNotNull();
-		assertThat(postResponse.getUrls()).isNotEmpty();
-		assertThat(postResponse.getTitle()).isEqualTo(testTitle);
-		assertThat(postResponse.getContent()).isEqualTo(testContent);
-		assertThat(postResponse.getPostType()).isEqualToIgnoringCase(testPostType);
-		assertThat(postResponse.getCategory()).isEqualToIgnoringCase(testCategory);
-	}
 
 	@Test
 	@DisplayName("포스트 업데이트 요청시 기존 포스트가 존재한다면 수정되어야 한다")

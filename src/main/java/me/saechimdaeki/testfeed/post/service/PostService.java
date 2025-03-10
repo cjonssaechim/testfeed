@@ -47,10 +47,12 @@ public class PostService {
 			.orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
 		String imageUrl = "";
-		try {
-			imageUrl = fileStorageService.saveFile(image);
-		} catch (IOException e) {
-			log.error("파일 저장 실패 ", e.getMessage());
+		if (image != null && !image.isEmpty()) {
+			try {
+				imageUrl = fileStorageService.saveFile(image);
+			} catch (IOException e) {
+				log.error("파일 저장 실패 ", e.getMessage());
+			}
 		}
 		postCreateRequest = postCreateRequest.withImageUrl(imageUrl);
 		Post post = PostCreateRequest.create(postCreateRequest, user);
