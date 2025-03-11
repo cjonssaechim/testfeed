@@ -14,25 +14,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class FileStorageService {
-	private final Path uploadDir;
 
-	public FileStorageService(@Value("${image.url}") String uploadDir) {
-		this.uploadDir = Paths.get(uploadDir).toAbsolutePath().normalize();
-	}
+	@Value("${image.url}")
+	private String imagePath;
 
 	public String saveFile(MultipartFile file) throws IOException {
+
+		final Path uploadDir = Paths.get(imagePath).toAbsolutePath().normalize();
+
 		if (file.isEmpty()) {
 			throw new IOException("빈 파일입니다.");
 		}
 
-		Files.createDirectories(this.uploadDir);
+		Files.createDirectories(uploadDir);
 
 		String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-		Path targetPath = this.uploadDir.resolve(fileName);
+		Path targetPath = uploadDir.resolve(fileName);
 
 		Files.write(targetPath, file.getBytes());
 
-		fileName = uploadDir + "/" + fileName;
+		fileName = imagePath + "/" + fileName;
 
 		return fileName;
 	}

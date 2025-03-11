@@ -45,7 +45,7 @@ public class Post extends BaseEntity {
 
 	private String content;
 
-	private String imageUrl; // TODO S3
+	private String imageUrl;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")

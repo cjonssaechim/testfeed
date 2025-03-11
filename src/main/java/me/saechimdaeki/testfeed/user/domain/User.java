@@ -57,4 +57,5 @@ public class User extends BaseEntity {
 	public void changeUserType(String userType) {
 		this.userType = UserType.fromString(userType);
 	}
+
 }

@@ -29,6 +29,8 @@ public class PostResponse {
 
 	private String category;
 
+	private Long postId;
+
 	public static PostResponse from(Post post, String username) {
 		PostResponse postResponse = new PostResponse();
 		postResponse.title = post.getTitle();
@@ -42,6 +44,7 @@ public class PostResponse {
 		postResponse.postType = String.valueOf(post.getPostType());
 		postResponse.urls = post.getUrls();
 		postResponse.category = String.valueOf(post.getCategory());
+		postResponse.postId = post.getId();
 		return postResponse;
 	}
 

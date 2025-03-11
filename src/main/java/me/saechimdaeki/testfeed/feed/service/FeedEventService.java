@@ -42,6 +42,7 @@ public class FeedEventService {
 	}
 
 	// 나중에는 개인화 추천으로 userId를 받을 예정, 지금은 카테고리별 피드.
+	// TODO 아직은 사용하지 않음.
 	public List<FeedResponse> retrieveFeedsByCategory(String category, int start, int end) {
 		String redisKey = RedisKeyConstants.generateCategoryKey(category);
 		List<FeedResponse> categoryFeed = redisTemplate.opsForList().range(redisKey, start, end);
