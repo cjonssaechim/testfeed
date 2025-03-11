@@ -64,7 +64,7 @@ public class PostLikeService {
 			.orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
 		PostLike postLike = postLikeRepository.findByUserAndPost(user, post)
-			.orElseThrow(() -> new PostLikeException(ErrorCode.POST_LIKE_DUPLICATED));
+			.orElseThrow(() -> new PostLikeException(ErrorCode.POST_LIKE_NOT_FOUND));
 
 		post.removeLike(postLike);
 
