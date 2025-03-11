@@ -33,7 +33,7 @@ public class FileStorageService {
 
 		Files.write(targetPath, file.getBytes());
 
-		fileName = imagePath + "/" + fileName;
+		fileName = "/" + imagePath + "/" + fileName;
 
 		return fileName;
 	}

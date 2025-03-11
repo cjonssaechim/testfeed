@@ -29,7 +29,8 @@ public class FeedEventService {
 
 	@KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.consumer-group}", containerFactory = "kafkaListenerContainerFactory")
 	public void handleFeedEvent(@Payload FeedEvent event) {
-		String redisKey = RedisKeyConstants.generateCategoryKey(event.getCategory());
+		// TODO Refactor commonkey
+		String redisKey = RedisKeyConstants.generateCommonFeedKey();
 
 		FeedResponse feedResponse = FeedResponse.from(event);
 		redisTemplate.opsForList().leftPush(redisKey, feedResponse);
@@ -48,7 +49,7 @@ public class FeedEventService {
 		List<FeedResponse> categoryFeed = redisTemplate.opsForList().range(redisKey, start, end);
 		if (CollectionUtils.isEmpty(categoryFeed)) {
 			Pageable pageable = PageRequest.of(start, end);
-			return feedService.getUsersFeeds(category, pageable);
+			return feedService.getUsersFeeds(pageable);
 		}
 
 		return categoryFeed;

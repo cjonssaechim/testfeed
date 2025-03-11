@@ -57,19 +57,11 @@ public class PostService {
 		postCreateRequest = postCreateRequest.withImageUrl(imageUrl);
 		Post post = PostCreateRequest.create(postCreateRequest, user);
 		postRepository.savePost(post);
-		FeedEvent feedEvent = new FeedEvent(post.getId(), user.getId(), post.getTitle(), post.getContent(),
-			user.getUsername(), post.getCategory().name());
+
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 			@Override
 			public void afterCommit() {
-				FeedEvent feedEvent = new FeedEvent(
-					post.getId(),
-					user.getId(),
-					post.getTitle(),
-					post.getContent(),
-					user.getUsername(),
-					post.getCategory().name()
-				);
+				FeedEvent feedEvent = FeedEvent.from(post, user);
 				kafkaTemplate.send("feed", feedEvent);
 			}
 		});

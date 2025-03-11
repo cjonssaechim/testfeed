@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import me.saechimdaeki.testfeed.feed.domain.Feed;
 import me.saechimdaeki.testfeed.feed.service.port.FeedRepository;
 import me.saechimdaeki.testfeed.feed.service.response.FeedResponse;
-import me.saechimdaeki.testfeed.post.domain.Category;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.post.service.PopularPostService;
 import me.saechimdaeki.testfeed.user.domain.User;
@@ -36,8 +35,8 @@ public class FeedService {
 
 	}
 
-	public List<FeedResponse> getUsersFeeds(String category, Pageable pageable) {
-		return feedRepository.findFeedsByCategory(Category.fromString(category), pageable)
+	public List<FeedResponse> getUsersFeeds(Pageable pageable) {
+		return feedRepository.findFeedsByCommonFeed(pageable)
 			.stream()
 			.map(FeedResponse::from)
 			.toList();

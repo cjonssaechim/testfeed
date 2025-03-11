@@ -5,11 +5,11 @@ spring:
       port: 6379
 kafka:
   host: localhost:9092
-  consumer-group: ons-feed
+  consumer-group: feed
   topic: feed
 
 image:
-  url: /images
+  url: images
 
 ---
 spring:

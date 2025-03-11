@@ -3,6 +3,7 @@ package me.saechimdaeki.testfeed.post.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.BatchSize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -75,6 +76,7 @@ public class Post extends BaseEntity {
 	private Set<String> urls = new HashSet<>();
 
 	// TODO redis 연계
+	@BatchSize(size = 1000)
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<PostLike> likes = new HashSet<>();
 
