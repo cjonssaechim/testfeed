@@ -7,11 +7,13 @@ import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.user.domain.User;
 
 public record PostCreateRequest(
-	@NotEmpty(message = "Title must not be empty") String title,
+	@NotEmpty(message = "title은 필수 사항입니다")
+	String title,
 	String content,
 	String couponCode,
 	String postType,
 	String category,
+	@NotEmpty(message = "username은 필수 사항입니다")
 	String username,
 	String imageUrl,
 	Set<String> urls

@@ -43,7 +43,8 @@ public class PostController {
 			content = @Content(schema = @Schema(implementation = PostResponse.class))),
 		@ApiResponse(responseCode = "400", description = "잘못된 요청",
 			content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
-		@ApiResponse(responseCode = "500", description = "서버 오류")
+		@ApiResponse(responseCode = "500", description = "서버 오류",
+		content = @Content(schema = @Schema(implementation = Void.class))),
 	})
 	@PostMapping(consumes = "multipart/form-data")
 	public CommonResponse<PostResponse> createPost(
