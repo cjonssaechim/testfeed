@@ -23,7 +23,7 @@ public class FeedService {
 	private final PopularPostService popularPostService;
 
 	@Transactional
-	public void saveFeed(Post post) {
+	public Feed saveFeed(Post post) {
 		User author = post.getAuthor();
 
 		Feed feed = Feed.builder()
@@ -31,8 +31,7 @@ public class FeedService {
 			.user(author)
 			.build();
 
-		Feed feed1 = feedRepository.saveFeed(feed);
-
+		return feedRepository.saveFeed(feed);
 	}
 
 	public List<FeedResponse> getUsersFeeds(Pageable pageable) {

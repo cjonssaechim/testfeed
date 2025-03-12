@@ -2,6 +2,7 @@ package me.saechimdaeki.testfeed.user.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.saechimdaeki.testfeed.common.domain.BaseEntity;
@@ -28,7 +28,6 @@ import me.saechimdaeki.testfeed.post.domain.Post;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false)
 public class User extends BaseEntity {
 
 	@Id
@@ -58,4 +57,17 @@ public class User extends BaseEntity {
 		this.userType = UserType.fromString(userType);
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object == null || getClass() != object.getClass())
+			return false;
+		User user = (User)object;
+		return Objects.equals(id, user.id) && Objects.equals(username, user.username)
+			&& userType == user.userType && Objects.equals(posts, user.posts);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, username, userType, posts);
+	}
 }

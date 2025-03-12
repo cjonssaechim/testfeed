@@ -1,6 +1,7 @@
 package me.saechimdaeki.testfeed.post.domain;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.annotations.BatchSize;
@@ -122,10 +123,13 @@ public class Post extends BaseEntity {
 
 	public void addLike(PostLike postLike) {
 		this.likes.add(postLike);
+		postLike.setPost(this);
 	}
 
 	public void removeLike(PostLike postLike) {
 		this.likes.remove(postLike);
+		postLike.setPost(null);
+		postLike.setUser(null);
 	}
 
 	public void changeVisibility() {
@@ -165,5 +169,26 @@ public class Post extends BaseEntity {
 	public void registerAuthor(User author) {
 		this.author = author;
 		author.addPost(this);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null || getClass() != object.getClass())
+			return false;
+		Post post = (Post)object;
+		return visibility == post.visibility && Objects.equals(id, post.id) && Objects.equals(title,
+			post.title) && Objects.equals(content, post.content) && Objects.equals(imageUrl,
+			post.imageUrl) && Objects.equals(author, post.author) && Objects.equals(views, post.views)
+			&& Objects.equals(couponCode, post.couponCode) && Objects.equals(usefulCount,
+			post.usefulCount) && Objects.equals(disappointCount, post.disappointCount)
+			&& category == post.category && postType == post.postType && Objects.equals(urls, post.urls)
+			&& Objects.equals(likes, post.likes);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, title, content, imageUrl, author, views, couponCode, usefulCount, disappointCount,
+			category,
+			visibility, postType, urls, likes);
 	}
 }
