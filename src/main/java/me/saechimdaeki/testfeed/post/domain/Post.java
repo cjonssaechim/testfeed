@@ -24,7 +24,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.saechimdaeki.testfeed.common.domain.BaseEntity;
@@ -35,7 +34,6 @@ import me.saechimdaeki.testfeed.user.domain.User;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false)
 public class Post extends BaseEntity {
 
 	@Id
