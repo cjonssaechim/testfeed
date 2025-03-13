@@ -35,12 +35,17 @@
           <span class="category">{{ feed.content.category }}</span>
         </div>
 
-        <img
-            v-if="feed.content.imageUrl"
-            :src="`http://13.124.159.53${feed.content.imageUrl}`"
-            alt="피드 이미지"
-            class="feed-image"
-        />
+        <!-- 이미지와 flag -->
+        <div class="image-container">
+          <img
+              v-if="feed.content.imageUrl"
+              :src="`http://13.124.159.53${feed.content.imageUrl}`"
+              alt="피드 이미지"
+              class="feed-image"
+          />
+          <!-- flag는 이미지 상단 우측에 배치 -->
+          <div v-if="feed.content.flag" class="flag">{{ feed.content.flag }}</div>
+        </div>
 
         <h3 class="feed-title">{{ feed.content.title }}</h3>
         <p class="feed-content">{{ feed.content.content }}</p>
@@ -101,39 +106,6 @@ export default {
         this.loading = false;
       }
     },
-
-    async fetchHotFeeds() {
-      // 입력값 유효성 검사
-      const start = parseInt(this.startInput);
-      const end = parseInt(this.sizeInput) + start; // 'end'는 start + size로 계산
-
-      if (isNaN(start) || start < 0 || isNaN(end) || end < start) {
-        this.errorMessage = "❌ 유효한 start와 end를 입력해주세요.";
-        return;
-      }
-
-      this.loading = true;
-      this.errorMessage = "";
-      this.feeds = [];
-
-      try {
-        const response = await axios.get("http://13.124.159.53/feeds/hot", {
-          params: { start, end },
-          timeout: 5000,
-        });
-
-        if (response.data.resultCode === "001" && response.data.data) {
-          this.feeds = response.data.data;
-        } else {
-          this.errorMessage = "❌ 인기 피드를 불러오는 데 실패했습니다.";
-        }
-      } catch (error) {
-        this.errorMessage = "❌ 인기 피드를 불러오는 데 실패했습니다.";
-      } finally {
-        this.loading = false;
-      }
-    },
-
     formatDate(dateStr) {
       return new Date(dateStr).toLocaleString();
     },
@@ -211,12 +183,27 @@ export default {
   color: darkred;
 }
 
+.image-container {
+  position: relative;
+}
+
 .feed-image {
   width: 100%;
   height: auto;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 10px;
+}
+
+.flag {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: indianred;
+  color: black;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
 }
 
 .feed-title {
