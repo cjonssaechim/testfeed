@@ -73,7 +73,7 @@ export default {
       this.errorMessage = "";
       this.feeds = [];
       try {
-        const response = await axios.get("http://localhost:8080/feeds", {
+        const response = await axios.get("http://13.124.159.53/feeds", {
           params: { start: start, size: size }, // 동적 params 사용
           timeout: 5000,
         });
@@ -83,7 +83,7 @@ export default {
             content: {
               ...feed.content,
               imageUrl: feed.content.imageUrl
-                  ? `http://localhost:8080${feed.content.imageUrl}`
+                  ? `http://13.124.159.53${feed.content.imageUrl}`
                   : "",
             },
           }));
@@ -109,7 +109,7 @@ export default {
       this.errorMessage = "";
       this.feeds = [];
       try {
-        const response = await axios.get("http://localhost:8080/feeds/hot", {
+        const response = await axios.get("http://13.124.159.53/feeds/hot", {
           params: { start: start, size: size }, // 동적 params 사용
           timeout: 5000,
         });
@@ -119,7 +119,7 @@ export default {
             content: {
               ...feed.content,
               imageUrl: feed.content.imageUrl
-                  ? `http://localhost:8080${feed.content.imageUrl}`
+                  ? `http://13.124.159.53${feed.content.imageUrl}`
                   : "",
             },
           }));
@@ -195,7 +195,7 @@ export default {
 
 .feed-image {
   width: 100%;
-  height: 200px;
+  height: auto;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 10px;
