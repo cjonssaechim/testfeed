@@ -42,6 +42,11 @@ public class FeedService {
 	}
 
 	public List<FeedResponse> getHotFeeds(int start, int end) {
+		List<Post> popularPosts = popularPostService.getPopularPosts(start, end);
+		List<FeedResponse> list = popularPostService.getPopularPosts(start, end)
+			.stream()
+			.map(FeedResponse::from)
+			.toList();
 		return popularPostService.getPopularPosts(start, end)
 			.stream()
 			.map(FeedResponse::from)

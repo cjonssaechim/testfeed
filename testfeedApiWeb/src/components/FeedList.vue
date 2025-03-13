@@ -110,7 +110,7 @@ export default {
       this.feeds = [];
       try {
         const response = await axios.get("http://13.124.159.53/feeds/hot", {
-          params: { start: start, size: size }, // 동적 params 사용
+          params: { start: start, end: size }, // 동적 params 사용
           timeout: 5000,
         });
         if (response.data.resultCode === "001" && response.data.data) {
