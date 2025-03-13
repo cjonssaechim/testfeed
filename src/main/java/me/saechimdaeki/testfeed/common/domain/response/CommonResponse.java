@@ -20,7 +20,7 @@ public class CommonResponse<T> {
 	T data;
 
 	public static <T> CommonResponse<T> of(int statusCode, T data) {
-		return new CommonResponse<>(Status.getSpecificMessage(statusCode), "success", data);
+		return new CommonResponse<>(Status.getSpecificMessage(statusCode), "정상", data);
 	}
 
 	@RequiredArgsConstructor

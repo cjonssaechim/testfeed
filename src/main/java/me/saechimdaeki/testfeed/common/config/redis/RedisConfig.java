@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
-import me.saechimdaeki.testfeed.feed.service.response.FeedResponse;
+import me.saechimdaeki.testfeed.feed.service.response.FeedVo;
 
 @Configuration
 public class RedisConfig {
@@ -46,8 +46,8 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisTemplate<String, FeedResponse> feedEventRedisTemplate(RedisConnectionFactory connectionFactory) {
-		RedisTemplate<String, FeedResponse> template = new RedisTemplate<>();
+	public RedisTemplate<String, FeedVo> feedEventRedisTemplate(RedisConnectionFactory connectionFactory) {
+		RedisTemplate<String, FeedVo> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 
 		StringRedisSerializer stringSerializer = new StringRedisSerializer();

@@ -16,7 +16,7 @@ import org.springframework.data.domain.Pageable;
 
 import me.saechimdaeki.testfeed.feed.domain.Feed;
 import me.saechimdaeki.testfeed.feed.service.port.FeedRepository;
-import me.saechimdaeki.testfeed.feed.service.response.FeedResponse;
+import me.saechimdaeki.testfeed.feed.service.response.FeedVo;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.post.service.PopularPostService;
 import me.saechimdaeki.testfeed.user.domain.User;
@@ -89,15 +89,15 @@ class FeedServiceTest {
 
 		// when
 
-		List<FeedResponse> usersFeeds = feedService.getUsersFeeds(pageable);
+		List<FeedVo> usersFeeds = feedService.getUsersFeeds(pageable);
 
 		// then
 		assertThat(usersFeeds).isNotEmpty();
 		assertThat(usersFeeds.size()).isEqualTo(1);
-		FeedResponse feedResponse = usersFeeds.get(0);
-		assertThat(feedResponse).isNotNull();
-		assertThat(feedResponse.getContent()).isNotNull();
-		assertThat(feedResponse.getContent().getContent()).isEqualTo(testPost.getContent());
+		FeedVo feedVo = usersFeeds.get(0);
+		assertThat(feedVo).isNotNull();
+		assertThat(feedVo.getContent()).isNotNull();
+		assertThat(feedVo.getContent().getContent()).isEqualTo(testPost.getContent());
 	}
 
 	@Test
@@ -108,7 +108,7 @@ class FeedServiceTest {
 
 		BDDMockito.given(feedRepository.findFeedsByCommonFeed(pageable)).willReturn(List.of());
 		// when
-		List<FeedResponse> usersFeeds = feedService.getUsersFeeds(pageable);
+		List<FeedVo> usersFeeds = feedService.getUsersFeeds(pageable);
 		// then
 		assertThat(usersFeeds).isEmpty();
 	}

@@ -1,53 +1,22 @@
 package me.saechimdaeki.testfeed.feed.service.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import java.util.List;
+
+import org.springframework.util.CollectionUtils;
+
 import lombok.Getter;
-import me.saechimdaeki.testfeed.feed.domain.Feed;
-import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
-import me.saechimdaeki.testfeed.post.domain.Post;
-import me.saechimdaeki.testfeed.user.domain.User;
-import me.saechimdaeki.testfeed.user.service.response.UserResponse;
+import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor
 public class FeedResponse {
-	private Long seq;
-	private UserResponse author;
-	private FeedContent content;
-	private Stats stats;
-	private Meta meta;
+	private List<FeedVo> feeds;
+	private String nextCursor;
 
-
-	public static FeedResponse from(FeedEvent feedEvent) {
-		return FeedResponse.builder()
-			.seq(feedEvent.getPostId())
-			.author(feedEvent.getAuthor())
-			.content(FeedContent.from(feedEvent))
-			.stats(Stats.from(feedEvent))
-			.build();
-	}
-
-	public static FeedResponse from(Feed feed) {
-		Post post = feed.getPost();
-		User user = feed.getUser();
-		return FeedResponse.builder()
-			.seq(post.getId())
-			.author(UserResponse.from(user))
-			.content(FeedContent.from(post))
-			.stats(Stats.from(post))
-			.meta(Meta.from(post))
-			.build();
-	}
-
-	public static FeedResponse from(Post post) {
-		return FeedResponse.builder()
-			.seq(post.getId())
-			.author(UserResponse.from(post.getAuthor()))
-			.content(FeedContent.from(post))
-			.stats(Stats.from(post))
-			.meta(Meta.from(post))
-			.build();
+	public FeedResponse(List<FeedVo> feeds) {
+		this.feeds = feeds;
+		if (!CollectionUtils.isEmpty(feeds)) {
+			this.nextCursor = String.valueOf(feeds.get(feeds.size() -1).getSeq());
+		}
 	}
 }

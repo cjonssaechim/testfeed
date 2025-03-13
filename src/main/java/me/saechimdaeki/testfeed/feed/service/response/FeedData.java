@@ -10,7 +10,7 @@ import me.saechimdaeki.testfeed.post.domain.Post;
 
 @Getter
 @NoArgsConstructor
-public class FeedContent {
+public class FeedData {
 	private String title;
 	private String content;
 	private String category;
@@ -24,7 +24,7 @@ public class FeedContent {
 	private LocalDateTime from;
 
 	@Builder
-	public FeedContent(String title, String content, String category, LocalDateTime createdAt, LocalDateTime updatedAt,
+	public FeedData(String title, String content, String category, LocalDateTime createdAt, LocalDateTime updatedAt,
 		Long views, int like, String imageUrl, String flag, LocalDateTime to, LocalDateTime from) {
 		this.title = title;
 		this.content = content;
@@ -39,8 +39,8 @@ public class FeedContent {
 		this.from = from;
 	}
 
-	public static FeedContent from(FeedEvent feedEvent) {
-		return FeedContent.builder()
+	public static FeedData from(FeedEvent feedEvent) {
+		return FeedData.builder()
 			.title(feedEvent.getTitle())
 			.content(feedEvent.getContent())
 			.category(feedEvent.getCategory())
@@ -52,8 +52,8 @@ public class FeedContent {
 			.build();
 	}
 
-	public static FeedContent from(Post post) {
-		return FeedContent.builder()
+	public static FeedData from(Post post) {
+		return FeedData.builder()
 			.content(post.getContent())
 			.title(post.getTitle())
 			.category(post.getCategory().name())

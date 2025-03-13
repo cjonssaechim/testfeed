@@ -1,5 +1,6 @@
 package me.saechimdaeki.testfeed.feed.service.port;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -10,4 +11,6 @@ public interface FeedRepository {
 	Feed saveFeed(Feed feed);
 
 	List<Feed> findFeedsByCommonFeed(Pageable pageable);
+
+	Collection<Feed> findFeedsByCursor(Long nextCursor, Pageable pageable);
 }

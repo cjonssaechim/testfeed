@@ -27,7 +27,7 @@ public class PopularPostService {
 			.incrementScore(RedisKeyConstants.generateHotArticleKey(), postId, likeCountDelta);
 	}
 
-	public List<Post> getPopularPosts(int start, int end) {
+	public List<Post> getPopularPosts(Long start, long end) {
 		Set<Long> postIds = redisTemplate.opsForZSet()
 			.reverseRange(RedisKeyConstants.generateHotArticleKey(), start, end - 1);
 

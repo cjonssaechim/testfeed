@@ -2,14 +2,6 @@
   <div class="feed-container">
     <h2>📢 피드 목록</h2>
 
-    <!-- 사용자 입력 필드 -->
-    <div class="input-group">
-      <label>시작 인덱스: </label>
-      <input v-model="startInput" type="number" min="0" placeholder="0" />
-      <label>가져올 피드 수: </label>
-      <input v-model="sizeInput" type="number" min="1" placeholder="10" />
-    </div>
-
     <div class="button-group">
       <button @click="fetchFeeds">📄 일반 피드 조회</button>
       <button @click="fetchHotFeeds">🔥 인기 피드 조회</button>
@@ -58,6 +50,11 @@
       </div>
     </div>
 
+    <!-- 더보기 버튼 -->
+    <div v-if="nextCursor" class="more-button">
+      <button @click="loadMoreFeeds">더보기</button>
+    </div>
+
     <!-- 데이터가 없을 경우 -->
     <p v-else-if="!loading && feeds.length === 0">❌ 불러온 피드가 없습니다.</p>
   </div>
@@ -72,31 +69,25 @@ export default {
       feeds: [],
       loading: false,
       errorMessage: "",
-      startInput: 0,
-      sizeInput: 10,
+      nextCursor: null, // nextCursor 추가
     };
   },
   methods: {
     async fetchFeeds() {
-      const start = parseInt(this.startInput);
-      const size = parseInt(this.sizeInput);
-      if (isNaN(start) || start < 0 || isNaN(size) || size < 1) {
-        this.errorMessage = "❌ 유효한 start와 size를 입력해주세요.";
-        return;
-      }
-
       this.loading = true;
       this.errorMessage = "";
       this.feeds = [];
+      this.nextCursor = null;
 
       try {
         const response = await axios.get("http://13.124.159.53/feeds", {
-          params: { start, size },
+          params: { nextCursor: 0 },
           timeout: 5000,
         });
 
         if (response.data.resultCode === "001" && response.data.data) {
-          this.feeds = response.data.data;
+          this.feeds = response.data.data.feeds;
+          this.nextCursor = response.data.data.nextCursor;
         } else {
           this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
         }
@@ -106,27 +97,22 @@ export default {
         this.loading = false;
       }
     },
+
     async fetchHotFeeds() {
-      const start = parseInt(this.startInput);
-      const end = parseInt(this.sizeInput);
-
-      if (isNaN(start) || start < 0 || isNaN(end) || end < 1) {
-        this.errorMessage = "❌ 유효한 start와 end를 입력해주세요.";
-        return;
-      }
-
       this.loading = true;
       this.errorMessage = "";
       this.feeds = [];
+      this.nextCursor = null;
 
       try {
         const response = await axios.get("http://13.124.159.53/feeds/hot", {
-          params: { start, end },
+          params: { nextCursor: 0 },
           timeout: 5000,
         });
 
         if (response.data.resultCode === "001" && response.data.data) {
-          this.feeds = response.data.data;
+          this.feeds = response.data.data.feeds;
+          this.nextCursor = response.data.data.nextCursor;
         } else {
           this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
         }
@@ -136,6 +122,32 @@ export default {
         this.loading = false;
       }
     },
+
+    async loadMoreFeeds() {
+      if (!this.nextCursor) return;
+
+      this.loading = true;
+      this.errorMessage = "";
+
+      try {
+        const response = await axios.get("http://13.124.159.53/feeds", {
+          params: { nextCursor: this.nextCursor },
+          timeout: 5000,
+        });
+
+        if (response.data.resultCode === "001" && response.data.data) {
+          this.feeds = [...this.feeds, ...response.data.data.feeds];
+          this.nextCursor = response.data.data.nextCursor;
+        } else {
+          this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
+        }
+      } catch (error) {
+        this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
+      } finally {
+        this.loading = false;
+      }
+    },
+
     formatDate(dateStr) {
       return new Date(dateStr).toLocaleString();
     },
@@ -151,19 +163,6 @@ export default {
   width: 600px;
   margin: auto;
   text-align: center;
-}
-
-.input-group {
-  margin-bottom: 15px;
-}
-
-.input-group label {
-  margin-right: 5px;
-}
-
-.input-group input {
-  width: 50px;
-  margin-right: 10px;
 }
 
 .button-group {
@@ -258,5 +257,9 @@ export default {
 
 .error {
   color: red;
+}
+
+.more-button {
+  margin-top: 20px;
 }
 </style>
