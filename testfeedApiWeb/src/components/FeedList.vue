@@ -45,7 +45,7 @@
         <div class="meta-info">
           <span>👍 좋아요: {{ feed.content.like }}</span>
           <span>👀 조회수: {{ feed.content.views }}</span>
-          <span>📅 작성일: {{ formatDate(feed.content.createdAt) }}</span>
+          <span>📅 작성일: {{ formatDate(feed.meta.createdAt) }}</span>
         </div>
       </div>
     </div>

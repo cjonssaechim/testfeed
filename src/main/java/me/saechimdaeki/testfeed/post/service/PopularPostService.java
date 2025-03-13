@@ -28,14 +28,14 @@ public class PopularPostService {
 	}
 
 	public List<Post> getPopularPosts(LocalDateTime cursorTime) {
-		// 시간 기준으로 인기글 조회
 		Set<Long> postIds = redisTemplate.opsForZSet()
 			.reverseRangeByScore(RedisKeyConstants.generateHotArticleKey(),
 				cursorTime.atZone(ZoneId.systemDefault()).toEpochSecond(),
 				Long.MAX_VALUE);
 
-		// 게시글 데이터를 조회하고 피드를 반환
 		List<Post> popularPosts = postRepository.findAllPostByPostIds(postIds);
+
+
 		return popularPosts;
 	}
 }

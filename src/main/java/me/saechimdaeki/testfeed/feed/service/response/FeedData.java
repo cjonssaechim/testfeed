@@ -14,25 +14,17 @@ public class FeedData {
 	private String title;
 	private String content;
 	private String category;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
-	private Long views;
-	private int like;
 	private String imageUrl;
 	private String flag;
 	private LocalDateTime to;
 	private LocalDateTime from;
 
 	@Builder
-	public FeedData(String title, String content, String category, LocalDateTime createdAt, LocalDateTime updatedAt,
-		Long views, int like, String imageUrl, String flag, LocalDateTime to, LocalDateTime from) {
+	public FeedData(String title, String content, String category,
+		String imageUrl, String flag, LocalDateTime to, LocalDateTime from) {
 		this.title = title;
 		this.content = content;
 		this.category = category;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-		this.views = views;
-		this.like = like;
 		this.imageUrl = imageUrl;
 		this.flag = flag;
 		this.to = to;
@@ -44,10 +36,6 @@ public class FeedData {
 			.title(feedEvent.getTitle())
 			.content(feedEvent.getContent())
 			.category(feedEvent.getCategory())
-			.createdAt(feedEvent.getCreatedAt())
-			.updatedAt(feedEvent.getUpdatedAt())
-			.views(feedEvent.getViews())
-			.like(feedEvent.getLike())
 			.imageUrl(feedEvent.getImageUrl())
 			.build();
 	}
@@ -57,10 +45,6 @@ public class FeedData {
 			.content(post.getContent())
 			.title(post.getTitle())
 			.category(post.getCategory().name())
-			.createdAt(post.getCreatedAt())
-			.updatedAt(post.getUpdatedAt())
-			.views(post.getViews())
-			.like(post.getLikes().size())
 			.imageUrl(post.getImageUrl())
 			.flag(post.getFlag())
 			.to(post.getToDate())
