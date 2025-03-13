@@ -31,7 +31,7 @@ public class PopularPostService {
 		Set<Long> postIds = redisTemplate.opsForZSet()
 			.reverseRange(RedisKeyConstants.generateHotArticleKey(), start, end - 1);
 
-		if (!CollectionUtils.isEmpty(postIds)) {
+		if (CollectionUtils.isEmpty(postIds)) {
 			return Collections.emptyList();
 		}
 
