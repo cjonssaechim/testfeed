@@ -101,6 +101,39 @@ export default {
         this.loading = false;
       }
     },
+
+    async fetchHotFeeds() {
+      // 입력값 유효성 검사
+      const start = parseInt(this.startInput);
+      const end = parseInt(this.sizeInput) + start; // 'end'는 start + size로 계산
+
+      if (isNaN(start) || start < 0 || isNaN(end) || end < start) {
+        this.errorMessage = "❌ 유효한 start와 end를 입력해주세요.";
+        return;
+      }
+
+      this.loading = true;
+      this.errorMessage = "";
+      this.feeds = [];
+
+      try {
+        const response = await axios.get("http://13.124.159.53/feeds/hot", {
+          params: { start, end },
+          timeout: 5000,
+        });
+
+        if (response.data.resultCode === "001" && response.data.data) {
+          this.feeds = response.data.data;
+        } else {
+          this.errorMessage = "❌ 인기 피드를 불러오는 데 실패했습니다.";
+        }
+      } catch (error) {
+        this.errorMessage = "❌ 인기 피드를 불러오는 데 실패했습니다.";
+      } finally {
+        this.loading = false;
+      }
+    },
+
     formatDate(dateStr) {
       return new Date(dateStr).toLocaleString();
     },
