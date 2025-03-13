@@ -1,5 +1,6 @@
 package me.saechimdaeki.testfeed.post.service.response;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import lombok.Getter;
@@ -31,6 +32,12 @@ public class PostResponse {
 
 	private Long postId;
 
+	private String flag;
+
+	private LocalDateTime from;
+
+	private LocalDateTime to;
+
 	public static PostResponse from(Post post, String username) {
 		PostResponse postResponse = new PostResponse();
 		postResponse.title = post.getTitle();
@@ -45,6 +52,9 @@ public class PostResponse {
 		postResponse.urls = post.getUrls();
 		postResponse.category = String.valueOf(post.getCategory());
 		postResponse.postId = post.getId();
+		postResponse.flag = post.getFlag();
+		postResponse.from = post.getFromDate();
+		postResponse.to = post.getToDate();
 		return postResponse;
 	}
 

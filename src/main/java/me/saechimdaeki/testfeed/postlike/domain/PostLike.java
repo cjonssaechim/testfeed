@@ -1,7 +1,5 @@
 package me.saechimdaeki.testfeed.postlike.domain;
 
-import java.util.Objects;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +21,7 @@ import me.saechimdaeki.testfeed.user.domain.User;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "post_like")
 public class PostLike extends BaseEntity {
 
 	@Id
@@ -43,19 +43,5 @@ public class PostLike extends BaseEntity {
 	public PostLike(User user, Post post) {
 		this.user = user;
 		this.post = post;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null || getClass() != object.getClass())
-			return false;
-		PostLike postLike = (PostLike)object;
-		return Objects.equals(id, postLike.id) && Objects.equals(user, postLike.user)
-			&& Objects.equals(post, postLike.post);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
 	}
 }

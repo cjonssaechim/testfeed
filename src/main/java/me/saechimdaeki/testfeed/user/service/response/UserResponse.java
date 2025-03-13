@@ -9,10 +9,12 @@ import me.saechimdaeki.testfeed.user.domain.User;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
-	private String username;
-	private String userType;
+	private Long mbrNo;
+	private String mbrName;
+	private String type;
+	private String profile;
 
 	public static UserResponse from(User user) {
-		return new UserResponse(user.getUsername(), user.getUserType().name());
+		return new UserResponse(user.getId(), user.getUsername(), user.getUserType().name(), user.getProfileUrl());
 	}
 }

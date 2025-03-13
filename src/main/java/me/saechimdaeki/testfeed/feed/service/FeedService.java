@@ -45,10 +45,8 @@ public class FeedService {
 
 	public List<FeedResponse> getHotFeeds(int start, int end) {
 		List<Post> popularPosts = popularPostService.getPopularPosts(start, end);
-		for (Post popularPost : popularPosts) {
-			log.info("Popular post: {}", popularPost.getTitle());
-		}
-		return popularPostService.getPopularPosts(start, end)
+		popularPosts.forEach(popularPost -> log.info("Popular post: {}", popularPost.getTitle()));
+		return popularPosts
 			.stream()
 			.map(FeedResponse::from)
 			.toList();

@@ -15,4 +15,7 @@ public class PostUpdateRequest {
 	private String postType;
 	private Boolean visibility;
 	private Set<String> urls;
+	private String flag;
+	private Long from;
+	private Long to;
 }

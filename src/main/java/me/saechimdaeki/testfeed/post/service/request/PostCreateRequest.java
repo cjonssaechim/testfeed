@@ -16,7 +16,10 @@ public record PostCreateRequest(
 	@NotEmpty(message = "username은 필수 사항입니다")
 	String username,
 	String imageUrl,
-	Set<String> urls
+	Set<String> urls,
+	String flag,
+	long from,
+	long to
 ) {
 
 	public static Post create(PostCreateRequest request, User user) {
@@ -27,7 +30,10 @@ public record PostCreateRequest(
 			request.couponCode,
 			request.postType,
 			request.category,
-			request.urls);
+			request.urls,
+			request.flag,
+			request.from,
+			request.to);
 	}
 
 	public PostCreateRequest withImageUrl(String newImageUrl) {
@@ -39,7 +45,10 @@ public record PostCreateRequest(
 			this.category,
 			this.username,
 			newImageUrl,
-			this.urls
+			this.urls,
+			this.flag,
+			this.from,
+			this.to
 		);
 	}
 }

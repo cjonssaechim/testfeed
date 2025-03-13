@@ -43,6 +43,8 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Post> posts = new ArrayList<>();
 
+	private String profileUrl;
+
 	@Builder
 	public User(String username, UserType userType) {
 		this.username = username;
@@ -57,17 +59,22 @@ public class User extends BaseEntity {
 		this.userType = UserType.fromString(userType);
 	}
 
+	public void changeProfileUrl(String profileUrl) {
+		this.profileUrl = profileUrl;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object == null || getClass() != object.getClass())
 			return false;
 		User user = (User)object;
 		return Objects.equals(id, user.id) && Objects.equals(username, user.username)
-			&& userType == user.userType && Objects.equals(posts, user.posts);
+			&& userType == user.userType && Objects.equals(posts, user.posts) && Objects.equals(
+			profileUrl, user.profileUrl);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, username, userType, posts);
+		return Objects.hash(id, username, userType, posts, profileUrl);
 	}
 }

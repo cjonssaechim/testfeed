@@ -1,5 +1,8 @@
 package me.saechimdaeki.testfeed.post.domain;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,6 +25,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,11 +38,12 @@ import me.saechimdaeki.testfeed.user.domain.User;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "post")
 public class Post extends BaseEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "post_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String title;
@@ -72,6 +77,7 @@ public class Post extends BaseEntity {
 		name = "urls",
 		joinColumns = @JoinColumn(name = "post_id")
 	)
+	@Column(name = "post_url")
 	private Set<String> urls = new HashSet<>();
 
 	// TODO redis 연계
@@ -79,16 +85,17 @@ public class Post extends BaseEntity {
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<PostLike> likes = new HashSet<>();
 
-	//TODO
-	// 위치 첨부, 썸네일
+	// 추가해달라 하여 추가한 필드.
+	private String flag;
+	private LocalDateTime fromDate;
+	private LocalDateTime toDate;
+	private Long share;
+
 
 	@Builder
 	public Post(String title, String content, String imageUrl, User author, Long views, String couponCode,
-		Long usefulCount,
-		Long disappointCount,
-		PostType postType,
-		Category category,
-		Set<String> urls) {
+		Long usefulCount, Long disappointCount, PostType postType, Category category,
+		Set<String> urls, String flag, LocalDateTime fromDate, LocalDateTime toDate, Long share) {
 		this.title = title;
 		this.content = content;
 		this.imageUrl = imageUrl;
@@ -100,10 +107,15 @@ public class Post extends BaseEntity {
 		this.postType = postType == null ? PostType.NORMAL : postType;
 		this.category = category == null ? Category.ETC : category;
 		this.urls = urls;
+		this.flag = flag;
+		this.fromDate = fromDate;
+		this.toDate = toDate;
+		this.share = share;
 	}
 
-	public static Post create(String title, String content, String imageUrl,
-		User author, String couponCode, String postType, String category, Set<String> urls) {
+	public static Post create(String title, String content, String imageUrl, User author,
+		String couponCode, String postType, String category,
+		Set<String> urls, String flag, long from, long to) {
 		return Post.builder()
 			.title(title)
 			.content(content)
@@ -116,6 +128,10 @@ public class Post extends BaseEntity {
 			.postType(PostType.fromString(postType))
 			.category(Category.fromString(category))
 			.urls(urls)
+			.flag(flag)
+			.fromDate(from == 0 ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(from), ZoneId.systemDefault()))
+			.toDate(to == 0 ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(to), ZoneId.systemDefault()))
+			.share(0L)
 			.build();
 	}
 
@@ -162,6 +178,19 @@ public class Post extends BaseEntity {
 		if (!CollectionUtils.isEmpty(postUpdateRequest.getUrls())) {
 			this.urls = postUpdateRequest.getUrls();
 		}
+
+		if (StringUtils.hasText(postUpdateRequest.getFlag())) {
+			this.flag = postUpdateRequest.getFlag();
+		}
+
+		if (null != postUpdateRequest.getFrom()) {
+			this.fromDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(postUpdateRequest.getFrom()),
+				ZoneId.systemDefault());
+		}
+
+		if (null != postUpdateRequest.getTo()) {
+			this.toDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(postUpdateRequest.getTo()), ZoneId.systemDefault());
+		}
 	}
 
 	public void registerAuthor(User author) {
@@ -180,13 +209,15 @@ public class Post extends BaseEntity {
 			&& Objects.equals(couponCode, post.couponCode) && Objects.equals(usefulCount,
 			post.usefulCount) && Objects.equals(disappointCount, post.disappointCount)
 			&& category == post.category && postType == post.postType && Objects.equals(urls, post.urls)
-			&& Objects.equals(likes, post.likes);
+			&& Objects.equals(likes, post.likes) && Objects.equals(flag, post.flag)
+			&& Objects.equals(fromDate, post.fromDate) && Objects.equals(toDate, post.toDate)
+			&& Objects.equals(share, post.share);
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, title, content, imageUrl, author, views, couponCode, usefulCount, disappointCount,
 			category,
-			visibility, postType, urls, likes);
+			visibility, postType, urls, likes, flag, fromDate, toDate, share);
 	}
 }
