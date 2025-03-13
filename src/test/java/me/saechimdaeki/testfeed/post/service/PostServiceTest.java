@@ -51,7 +51,7 @@ class PostServiceTest {
 		// given
 		User user = new User(testUsername, UserType.USER);
 		Post post = new Post(testTitle, testContent, null, user, 0L, null, 0L, 0L, PostType.BIZ, Category.ETC,
-			testUrls);
+			testUrls,null, null, null, null);
 
 		String updateTitle = "updateTitle";
 		String updateContent = "updateContent";
@@ -60,7 +60,7 @@ class PostServiceTest {
 		Set<String> updateUrls = Set.of("www.updatedGoogle.com", "www.updatedYoutube.com");
 
 		PostUpdateRequest postUpdateRequest = new PostUpdateRequest(updateTitle, updateContent, updateImageUrl, null,
-			updatePostType, null, updateUrls);
+			updatePostType, null, updateUrls,null, null, null);
 
 		BDDMockito.given(postRepository.findById(1L)).willReturn(Optional.of(post));
 		// when
