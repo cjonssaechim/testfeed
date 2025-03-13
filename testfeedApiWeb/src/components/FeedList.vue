@@ -81,7 +81,6 @@ export default {
 
       try {
         const response = await axios.get("http://13.124.159.53/feeds", {
-          params: { nextCursor: 0 },
           timeout: 5000,
         });
 
@@ -106,7 +105,6 @@ export default {
 
       try {
         const response = await axios.get("http://13.124.159.53/feeds/hot", {
-          params: { nextCursor: 0 },
           timeout: 5000,
         });
 

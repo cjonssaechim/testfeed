@@ -1,6 +1,7 @@
 package me.saechimdaeki.testfeed.feed.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +68,8 @@ public class FeedService {
 		if (!StringUtils.hasText(nextCursor)) {
 			return LocalDateTime.now();
 		}
-		return LocalDateTime.parse(nextCursor);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+
+		return LocalDateTime.parse(nextCursor, formatter);
 	}
 }
