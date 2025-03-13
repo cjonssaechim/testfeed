@@ -19,10 +19,13 @@ public class FeedContent {
 	private Long views;
 	private int like;
 	private String imageUrl;
+	private String flag;
+	private LocalDateTime to;
+	private LocalDateTime from;
 
 	@Builder
 	public FeedContent(String title, String content, String category, LocalDateTime createdAt, LocalDateTime updatedAt,
-		Long views, int like, String imageUrl) {
+		Long views, int like, String imageUrl, String flag, LocalDateTime to, LocalDateTime from) {
 		this.title = title;
 		this.content = content;
 		this.category = category;
@@ -31,6 +34,9 @@ public class FeedContent {
 		this.views = views;
 		this.like = like;
 		this.imageUrl = imageUrl;
+		this.flag = flag;
+		this.to = to;
+		this.from = from;
 	}
 
 	public static FeedContent from(FeedEvent feedEvent) {
@@ -56,6 +62,9 @@ public class FeedContent {
 			.views(post.getViews())
 			.like(post.getLikes().size())
 			.imageUrl(post.getImageUrl())
+			.flag(post.getFlag())
+			.to(post.getToDate())
+			.from(post.getFromDate())
 			.build();
 	}
 }
