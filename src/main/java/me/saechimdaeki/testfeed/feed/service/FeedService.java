@@ -1,11 +1,15 @@
 package me.saechimdaeki.testfeed.feed.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,7 @@ public class FeedService {
 
 	private final FeedRepository feedRepository;
 	private final PopularPostService popularPostService;
+	private final RedisTemplate<String, Long> redisTemplate;
 
 	@Transactional
 	public Feed saveFeed(Post post) {
@@ -37,21 +42,31 @@ public class FeedService {
 		return feedRepository.saveFeed(feed);
 	}
 
-	public List<FeedVo> getUsersFeeds(Long nextCursor) {
+	public List<FeedVo> getUsersFeeds(String nextCursor) {
 		Pageable pageable = PageRequest.of(0, 5);
 
-		return feedRepository.findFeedsByCursor(nextCursor, pageable)
+		LocalDateTime cursorDateTime = parseNextCursor(nextCursor);
+
+		return feedRepository.findFeedsByCursor(cursorDateTime, pageable)
 			.stream()
 			.map(FeedVo::from)
 			.toList();
 	}
 
-	public List<FeedVo> getHotFeeds(Long nextCursor) {
-		List<Post> popularPosts = popularPostService.getPopularPosts(nextCursor, nextCursor+5);
-		popularPosts.forEach(popularPost -> log.info("Popular post: {}", popularPost.getTitle()));
-		return popularPosts
-			.stream()
+	public List<FeedVo> getHotFeeds(String nextCursor) {
+		LocalDateTime cursorTime = parseNextCursor(nextCursor);
+
+		List<Post> popularPosts = popularPostService.getPopularPosts(cursorTime);
+
+		return popularPosts.stream()
 			.map(FeedVo::from)
-			.toList();
+			.collect(Collectors.toList());
+	}
+
+	private LocalDateTime parseNextCursor(String nextCursor) {
+		if (!StringUtils.hasText(nextCursor)) {
+			return LocalDateTime.now();
+		}
+		return LocalDateTime.parse(nextCursor);
 	}
 }

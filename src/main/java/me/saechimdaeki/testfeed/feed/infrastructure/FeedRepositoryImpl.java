@@ -1,5 +1,6 @@
 package me.saechimdaeki.testfeed.feed.infrastructure;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class FeedRepositoryImpl implements FeedRepository {
 	}
 
 	@Override
-	public Collection<Feed> findFeedsByCursor(Long nextCursor, Pageable pageable) {
+	public Collection<Feed> findFeedsByCursor(LocalDateTime nextCursor, Pageable pageable) {
 		return feedJpaRepository.findFeedsByCursor(nextCursor, pageable);
 	}
 }

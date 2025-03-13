@@ -1,5 +1,6 @@
 package me.saechimdaeki.testfeed.feed.service.response;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.util.CollectionUtils;
@@ -16,7 +17,7 @@ public class FeedResponse {
 	public FeedResponse(List<FeedVo> feeds) {
 		this.feeds = feeds;
 		if (!CollectionUtils.isEmpty(feeds)) {
-			this.nextCursor = String.valueOf(feeds.get(feeds.size() -1).getSeq());
-		}
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+			this.nextCursor = feeds.get(feeds.size() - 1).getContent().getCreatedAt().format(formatter);		}
 	}
 }

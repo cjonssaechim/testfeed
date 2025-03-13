@@ -40,8 +40,8 @@ public class FeedController {
 		)
 	)
 	public CommonResponse<FeedResponse> getFeedsByCategory(
-		@Parameter(description = "이 다음 읽을 id값. (선택사항, 기본값은 0)")
-		@RequestParam(required = false, defaultValue = "0") Long nextCursor) {
+		@Parameter(description = "이 다음 읽을 시간 값. (선택사항)")
+		@RequestParam(required = false) String nextCursor) {
 		FeedResponse feedResponse = new FeedResponse(feedService.getUsersFeeds(nextCursor));
 		return CommonResponse.of(HttpStatus.OK.value(), feedResponse);
 	}
@@ -60,8 +60,8 @@ public class FeedController {
 		)
 	)
 	public CommonResponse<FeedResponse> getHotFeeds(
-		@Parameter(description = "이 다음 읽을 id값. (선택사항, 기본값은 0)")
-		@RequestParam(required = false, defaultValue = "0") Long nextCursor) {
+		@Parameter(description = "이 다음 읽을 시간 값. (선택사항))")
+		@RequestParam(required = false) String nextCursor) {
 		FeedResponse feedResponse = new FeedResponse(feedService.getHotFeeds(nextCursor));
 		return CommonResponse.of(HttpStatus.OK.value(), feedResponse);
 	}

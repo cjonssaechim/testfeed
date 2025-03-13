@@ -1,12 +1,12 @@
 package me.saechimdaeki.testfeed.post.service;
 
-import java.util.Collections;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +27,15 @@ public class PopularPostService {
 			.incrementScore(RedisKeyConstants.generateHotArticleKey(), postId, likeCountDelta);
 	}
 
-	public List<Post> getPopularPosts(Long start, long end) {
+	public List<Post> getPopularPosts(LocalDateTime cursorTime) {
+		// 시간 기준으로 인기글 조회
 		Set<Long> postIds = redisTemplate.opsForZSet()
-			.reverseRange(RedisKeyConstants.generateHotArticleKey(), start, end - 1);
+			.reverseRangeByScore(RedisKeyConstants.generateHotArticleKey(),
+				cursorTime.atZone(ZoneId.systemDefault()).toEpochSecond(),
+				Long.MAX_VALUE);
 
-		if (CollectionUtils.isEmpty(postIds)) {
-			return Collections.emptyList();
-		}
-
-		return postRepository.findAllPostByPostIds(postIds);
+		// 게시글 데이터를 조회하고 피드를 반환
+		List<Post> popularPosts = postRepository.findAllPostByPostIds(postIds);
+		return popularPosts;
 	}
 }
