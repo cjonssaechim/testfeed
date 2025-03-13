@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.saechimdaeki.testfeed.feed.domain.Feed;
 import me.saechimdaeki.testfeed.feed.service.port.FeedRepository;
 import me.saechimdaeki.testfeed.feed.service.response.FeedResponse;
@@ -17,6 +18,7 @@ import me.saechimdaeki.testfeed.user.domain.User;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class FeedService {
 
 	private final FeedRepository feedRepository;
@@ -43,10 +45,9 @@ public class FeedService {
 
 	public List<FeedResponse> getHotFeeds(int start, int end) {
 		List<Post> popularPosts = popularPostService.getPopularPosts(start, end);
-		List<FeedResponse> list = popularPostService.getPopularPosts(start, end)
-			.stream()
-			.map(FeedResponse::from)
-			.toList();
+		for (Post popularPost : popularPosts) {
+			log.info("Popular post: {}", popularPost.getTitle());
+		}
 		return popularPostService.getPopularPosts(start, end)
 			.stream()
 			.map(FeedResponse::from)
