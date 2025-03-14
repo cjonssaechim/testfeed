@@ -18,6 +18,9 @@ public class FileStorageService {
 	@Value("${image.url}")
 	private String imagePath;
 
+	@Value("${host}")
+	private String host;
+
 	public String saveFile(MultipartFile file) throws IOException {
 
 		final Path uploadDir = Paths.get(imagePath).toAbsolutePath().normalize();
@@ -33,7 +36,7 @@ public class FileStorageService {
 
 		Files.write(targetPath, file.getBytes());
 
-		fileName = "/" + imagePath + "/" + fileName;
+		fileName = host+ "/" + imagePath + "/" + fileName;
 
 		return fileName;
 	}

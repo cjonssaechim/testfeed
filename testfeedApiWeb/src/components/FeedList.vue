@@ -17,7 +17,7 @@
           <div class="author-info">
             <img
                 v-if="feed.author.profile"
-                :src="`http://13.124.159.53${feed.author.profile}`"
+                :src="`${feed.author.profile}`"
                 alt="작성자 프로필"
                 class="author-profile"
             />
@@ -30,7 +30,7 @@
         <div class="image-container">
           <img
               v-if="feed.content.images.length > 0"
-              :src="`http://13.124.159.53${feed.content.images[0]}`"
+              :src="`${feed.content.images[0]}`"
               alt="피드 이미지"
               class="feed-image"
           />

@@ -29,6 +29,7 @@ spring:
   config:
     activate:
       on-profile: mysql
+host: http://13:124:159:53
 
 ---
 
