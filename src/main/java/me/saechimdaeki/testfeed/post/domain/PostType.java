@@ -7,8 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum PostType {
 	AD("광고 게시글"),
-	BIZ("비즈니스 파트너 게시글"),
+	EVENT("이벤트 게시글"),
 	NORMAL("일반 게시글"),
+	NOTICE("공지 게시글")
 	;
 
 	private final String postType;
@@ -17,6 +18,6 @@ public enum PostType {
 		return Arrays.stream(values())
 			.filter(posttype -> posttype.name().equalsIgnoreCase(type))
 			.findFirst()
-			.orElse(null);
+			.orElse(PostType.NORMAL);
 	}
 }

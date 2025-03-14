@@ -30,7 +30,7 @@ class FeedServiceTest {
 	private FeedService feedService;
 
 	final String testUsername = "testUser";
-	final UserType testUserType = UserType.USER;
+	final UserType testUserType = UserType.MEMBER;
 
 	User testUser = User.builder()
 		.username(testUsername)

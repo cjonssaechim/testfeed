@@ -26,6 +26,8 @@ public class FeedEvent {
 	private Long views;
 	private int like;
 	private Long share;
+	private String postType;
+
 
 	public static FeedEvent from(Post post, User user ) {
 		return FeedEvent
@@ -41,6 +43,7 @@ public class FeedEvent {
 			.views(post.getViews())
 			.like(post.getLikes().size())
 			.share(post.getShare())
+			.postType(post.getPostType().name())
 			.build();
 	}
 }

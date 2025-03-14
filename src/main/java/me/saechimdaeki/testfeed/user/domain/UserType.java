@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum UserType {
 	ADMIN("관리자"),
-	USER("일반 회원"),
-	BIZUSER("비즈니스 회원"),
+	MEMBER("일반 회원"),
+	BUSINESS("비즈니스 회원"),
 	;
 
 	private final String type;
@@ -17,7 +17,7 @@ public enum UserType {
 		return Arrays.stream(values())
 			.filter(userType -> userType.name().equalsIgnoreCase(type))
 			.findFirst()
-			.orElse(USER);
+			.orElse(MEMBER);
 	}
 
 }

@@ -49,8 +49,8 @@ class PostServiceTest {
 	@DisplayName("포스트 업데이트 요청시 기존 포스트가 존재한다면 수정되어야 한다")
 	void updatePost_Success() {
 		// given
-		User user = new User(testUsername, UserType.USER);
-		Post post = new Post(testTitle, testContent, null, user, 0L, null, 0L, 0L, PostType.BIZ, Category.ETC,
+		User user = new User(testUsername, UserType.MEMBER);
+		Post post = new Post(testTitle, testContent, null, user, 0L, null, 0L, 0L, PostType.EVENT, Category.ETC,
 			testUrls,null, null, null, null);
 
 		String updateTitle = "updateTitle";
