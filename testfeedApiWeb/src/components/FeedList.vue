@@ -15,7 +15,6 @@
       <div v-for="feed in feeds" :key="feed.seq" class="feed-card">
         <div class="feed-header">
           <div class="author-info">
-            <!-- 프로필 이미지가 있을 때만 표시 -->
             <img
                 v-if="feed.author.profile"
                 :src="`http://13.124.159.53${feed.author.profile}`"
@@ -24,23 +23,22 @@
             />
             <span class="author-name">{{ feed.author.mbrName }}</span>
           </div>
-          <span class="category">{{ feed.content.category }}</span>
+          <span class="category">{{ feed.content.category }} ({{ feed.content.categoryId }})</span>
         </div>
 
         <!-- 이미지와 flag -->
         <div class="image-container">
           <img
-              v-if="feed.content.imageUrl"
-              :src="`http://13.124.159.53${feed.content.imageUrl}`"
+              v-if="feed.content.images.length > 0"
+              :src="`http://13.124.159.53${feed.content.images[0]}`"
               alt="피드 이미지"
               class="feed-image"
           />
-          <!-- flag는 이미지 상단 우측에 배치 -->
           <div v-if="feed.content.flag" class="flag">{{ feed.content.flag }}</div>
         </div>
 
         <h3 class="feed-title">{{ feed.content.title }}</h3>
-        <p class="feed-content">{{ feed.content.content }}</p>
+        <p class="feed-content">{{ feed.content.body }}</p>
 
         <div class="meta-info">
           <span>👍 좋아요: {{ feed.stats.like }}</span>
@@ -55,7 +53,6 @@
       <button @click="loadMoreFeeds">더보기</button>
     </div>
 
-    <!-- 데이터가 없을 경우 -->
     <p v-else-if="!loading && feeds.length === 0">❌ 불러온 피드가 없습니다.</p>
   </div>
 </template>
@@ -69,7 +66,7 @@ export default {
       feeds: [],
       loading: false,
       errorMessage: "",
-      nextCursor: null, // nextCursor 추가
+      nextCursor: null,
     };
   },
   methods: {
@@ -80,10 +77,7 @@ export default {
       this.nextCursor = null;
 
       try {
-        const response = await axios.get("http://13.124.159.53/feeds", {
-          timeout: 5000,
-        });
-
+        const response = await axios.get("http://13.124.159.53/feeds", { timeout: 5000 });
         if (response.data.resultCode === "001" && response.data.data) {
           this.feeds = response.data.data.feeds;
           this.nextCursor = response.data.data.nextCursor;
@@ -104,10 +98,7 @@ export default {
       this.nextCursor = null;
 
       try {
-        const response = await axios.get("http://13.124.159.53/feeds/hot", {
-          timeout: 5000,
-        });
-
+        const response = await axios.get("http://13.124.159.53/feeds/hot", { timeout: 5000 });
         if (response.data.resultCode === "001" && response.data.data) {
           this.feeds = response.data.data.feeds;
           this.nextCursor = response.data.data.nextCursor;
@@ -132,7 +123,6 @@ export default {
           params: { nextCursor: this.nextCursor },
           timeout: 5000,
         });
-
         if (response.data.resultCode === "001" && response.data.data) {
           this.feeds = [...this.feeds, ...response.data.data.feeds];
           this.nextCursor = response.data.data.nextCursor;
@@ -155,6 +145,7 @@ export default {
   },
 };
 </script>
+
 
 <style>
 .feed-container {
