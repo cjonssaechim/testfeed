@@ -43,8 +43,8 @@
         <p class="feed-content">{{ feed.content.content }}</p>
 
         <div class="meta-info">
-          <span>👍 좋아요: {{ feed.content.like }}</span>
-          <span>👀 조회수: {{ feed.content.views }}</span>
+          <span>👍 좋아요: {{ feed.stats.like }}</span>
+          <span>👀 조회수: {{ feed.stats.views }}</span>
           <span>📅 작성일: {{ formatDate(feed.meta.createdAt) }}</span>
         </div>
       </div>
