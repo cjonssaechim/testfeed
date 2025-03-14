@@ -10,7 +10,7 @@ import me.saechimdaeki.testfeed.post.domain.Post;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Stats {
-	private Long views;
+	private Long view;
 	private int like;
 	private Long share;
 
