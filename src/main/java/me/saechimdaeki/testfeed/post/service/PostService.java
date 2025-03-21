@@ -101,4 +101,11 @@ public class PostService {
 		postResponse.changeViews(increment);
 		return postResponse;
 	}
+
+	public String sharePost(Long postId) {
+		Post post = postRepository.findPostByPostId(postId)
+			.orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+		Long increment = redisTemplate.opsForValue().increment(RedisKeyConstants.generatePostSharesKey(postId));
+		return "공유할 게시글의 shortUrl?";
+	}
 }

@@ -31,7 +31,7 @@ public class FeedEventService {
 		FeedVo feedVo = FeedVo.from(event, 0L, 0L, 0L);
 		redisTemplate.opsForList().leftPush(redisKey, feedVo);
 
-		Post post = postRepository.findPostByPostId(event.getPostId())
+		Post post = postRepository.findPostByPostId(postId)
 			.orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
 
 		feedService.saveFeed(post);

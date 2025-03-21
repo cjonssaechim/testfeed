@@ -98,4 +98,18 @@ public class PostController {
 		@Parameter(description = "조회할 게시글 ID") @PathVariable Long postId) {
 		return CommonResponse.of(HttpStatus.OK.value(), postService.readPost(postId));
 	}
+
+	@Operation(summary = "게시글 공유하기", description = "게시글에 공유하기를 누릅니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "게시글 공유 성공",
+			content = @Content(schema = @Schema(implementation = String.class))),
+		@ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음",
+			content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
+	})
+	@GetMapping("/{postId}/share")
+	public CommonResponse<String> sharePost(
+		@Parameter(description = "공유할 게시글 id") @PathVariable Long postId) {
+		return CommonResponse.of(HttpStatus.OK.value(), postService.sharePost(postId));
+	}
+
 }
