@@ -24,10 +24,11 @@ public class FeedEventService {
 
 	@KafkaListener(topics = "${kafka.topic}", groupId = "${kafka.consumer-group}", containerFactory = "kafkaListenerContainerFactory")
 	public void handleFeedEvent(@Payload FeedEvent event) {
-		// TODO Refactor commonkey
 		String redisKey = RedisKeyConstants.generateCommonFeedKey();
 
-		FeedVo feedVo = FeedVo.from(event);
+		Long postId = event.getPostId();
+
+		FeedVo feedVo = FeedVo.from(event, 0L, 0L, 0L);
 		redisTemplate.opsForList().leftPush(redisKey, feedVo);
 
 		Post post = postRepository.findPostByPostId(event.getPostId())

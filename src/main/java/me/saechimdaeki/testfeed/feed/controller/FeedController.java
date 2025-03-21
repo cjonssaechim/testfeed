@@ -46,23 +46,23 @@ public class FeedController {
 		return CommonResponse.of(HttpStatus.OK.value(), feedResponse);
 	}
 
-	/**
-	 * 인기 피드 조회 API
-	 * GET /feeds/hot?nextCursor=1
-	 */
-	@Operation(summary = "인기 피드 조회", description = "지정된 범위 내에서 인기 피드를 조회합니다.")
-	@GetMapping("/hot")
-	@ApiResponse(
-		responseCode = "200",
-		description = "성공적으로 인기 피드를 조회함",
-		content = @Content(mediaType = "application/json",
-			array = @ArraySchema(schema = @Schema(implementation = FeedResponse.class))
-		)
-	)
-	public CommonResponse<FeedResponse> getHotFeeds(
-		@Parameter(description = "이 다음 읽을 시간 값. (선택사항))")
-		@RequestParam(required = false) String nextCursor) {
-		FeedResponse feedResponse = new FeedResponse(feedService.getHotFeeds(nextCursor));
-		return CommonResponse.of(HttpStatus.OK.value(), feedResponse);
-	}
+	// /**
+	//  * 인기 피드 조회 API
+	//  * GET /feeds/hot?nextCursor=1
+	//  */
+	// @Operation(summary = "인기 피드 조회", description = "지정된 범위 내에서 인기 피드를 조회합니다.")
+	// @GetMapping("/hot")
+	// @ApiResponse(
+	// 	responseCode = "200",
+	// 	description = "성공적으로 인기 피드를 조회함",
+	// 	content = @Content(mediaType = "application/json",
+	// 		array = @ArraySchema(schema = @Schema(implementation = FeedResponse.class))
+	// 	)
+	// )
+	// public CommonResponse<FeedResponse> getHotFeeds(
+	// 	@Parameter(description = "이 다음 읽을 시간 값. (선택사항))")
+	// 	@RequestParam(required = false) String nextCursor) {
+	// 	FeedResponse feedResponse = new FeedResponse(feedService.getHotFeeds(nextCursor));
+	// 	return CommonResponse.of(HttpStatus.OK.value(), feedResponse);
+	// }
 }

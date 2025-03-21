@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import me.saechimdaeki.testfeed.common.exception.ErrorCode;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.post.exception.PostException;
-import me.saechimdaeki.testfeed.post.service.PopularPostService;
 import me.saechimdaeki.testfeed.post.service.port.PostRepository;
 import me.saechimdaeki.testfeed.postlike.domain.PostLike;
 import me.saechimdaeki.testfeed.postlike.exception.PostLikeException;
@@ -29,19 +28,19 @@ public class PostLikeService {
 	private final PostLikeRepository postLikeRepository;
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
-	private final PopularPostService popularPostService;
 
 	@Transactional
-	public void likePost(Long postId, String username) {
+	public void likePost(Long postId, String mbrName) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-		User user = userRepository.findByUserName(username)
+		User user = userRepository.findByMbrName(mbrName)
 			.orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
 		Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(user, post);
 		if (existingLike.isPresent()) {
 			throw new PostLikeException(ErrorCode.POST_LIKE_DUPLICATED);
 		}
+
 
 		PostLike postLike = PostLike.builder()
 			.user(user)
@@ -52,7 +51,6 @@ public class PostLikeService {
 
 		postLikeRepository.save(postLike);
 
-		popularPostService.updatePopularScore(postId, 1.0);
 	}
 
 	@Transactional
@@ -60,7 +58,7 @@ public class PostLikeService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
 
-		User user = userRepository.findByUserName(username)
+		User user = userRepository.findByMbrName(username)
 			.orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
 		PostLike postLike = postLikeRepository.findByUserAndPost(user, post)
@@ -69,7 +67,6 @@ public class PostLikeService {
 		post.removeLike(postLike);
 
 		postLikeRepository.delete(postLike);
-		popularPostService.updatePopularScore(postId, -1.0);
 
 	}
 }

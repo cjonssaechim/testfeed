@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -39,5 +41,15 @@ public class FileStorageService {
 		fileName = host+ "/" + imagePath + "/" + fileName;
 
 		return fileName;
+	}
+
+	public List<String> saveFiles(List<MultipartFile> files) throws IOException {
+		List<String> fileUrls = new ArrayList<>();
+		for (MultipartFile file : files) {
+			if (file != null && !file.isEmpty()) {
+				fileUrls.add(saveFile(file));
+			}
+		}
+		return fileUrls;
 	}
 }

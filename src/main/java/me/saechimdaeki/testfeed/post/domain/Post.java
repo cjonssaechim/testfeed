@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
-import java.util.Objects;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.BatchSize;
@@ -15,6 +15,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -46,23 +47,23 @@ public class Post extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(name = "post_title")
 	private String title;
 
-	private String content;
+	private String body;
 
-	private String imageUrl;
+	@ElementCollection
+	@CollectionTable(
+		name = "images",
+		joinColumns = @JoinColumn(name = "post_id")
+	)
+	private List<String> images;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User author;
 
-	private Long views;
-
 	private String couponCode;
-
-	private Long usefulCount;
-
-	private Long disappointCount;
 
 	@Enumerated(EnumType.STRING)
 	private Category category;
@@ -72,66 +73,68 @@ public class Post extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private PostType postType;
 
-	@ElementCollection
-	@CollectionTable(
-		name = "urls",
-		joinColumns = @JoinColumn(name = "post_id")
-	)
-	@Column(name = "post_url")
-	private Set<String> urls = new HashSet<>();
+	@Embedded
+	private Location location;
 
-	// TODO redis 연계
+	@Embedded
+	private MoreInfo more;
+
+	private String url;
+
+	// TODO like count를 계산 할 때에는 redis
 	@BatchSize(size = 1000)
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<PostLike> likes = new HashSet<>();
+	private Long share;
+	private Long views;
 
-	// 추가해달라 하여 추가한 필드.
 	private String flag;
 	private LocalDateTime fromDate;
 	private LocalDateTime toDate;
-	private Long share;
 
 
 	@Builder
-	public Post(String title, String content, String imageUrl, User author, Long views, String couponCode,
-		Long usefulCount, Long disappointCount, PostType postType, Category category,
-		Set<String> urls, String flag, LocalDateTime fromDate, LocalDateTime toDate, Long share) {
+	public Post(String title, String body, List<String> images, User author, String couponCode, Category category,
+		PostType postType, Location location, MoreInfo more, String url,
+		Long share, Long views, String flag, LocalDateTime fromDate, LocalDateTime toDate) {
 		this.title = title;
-		this.content = content;
-		this.imageUrl = imageUrl;
+		this.body = body;
+		this.images = images;
 		this.author = author;
-		this.views = views;
 		this.couponCode = couponCode;
-		this.usefulCount = usefulCount;
-		this.disappointCount = disappointCount;
-		this.postType = postType == null ? PostType.NORMAL : postType;
 		this.category = category == null ? Category.ETC : category;
-		this.urls = urls;
+		this.postType = postType == null ? PostType.NORMAL : postType;
+		this.location = location;
+		this.more = more;
+		this.url = url;
+		this.share = share;
+		this.views = views;
 		this.flag = flag;
 		this.fromDate = fromDate;
 		this.toDate = toDate;
-		this.share = share;
 	}
 
-	public static Post create(String title, String content, String imageUrl, User author,
-		String couponCode, String postType, String category,
-		Set<String> urls, String flag, long from, long to) {
+	public static Post create(
+		String title, String body, List<String> images, User author, String couponCode, String category,
+		String postType, Location location, MoreInfo more, String url,
+		String flag, long from, long to
+	) {
 		return Post.builder()
-			.title(title)
-			.content(content)
-			.imageUrl(imageUrl)
 			.author(author)
+			.title(title)
+			.body(body)
+			.images(images)
 			.couponCode(couponCode)
-			.views(0L)
-			.usefulCount(0L)
-			.disappointCount(0L)
-			.postType(PostType.fromString(postType))
 			.category(Category.fromString(category))
-			.urls(urls)
-			.flag(flag)
-			.fromDate(from == 0 ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(from), ZoneId.systemDefault()))
-			.toDate(to == 0 ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(to), ZoneId.systemDefault()))
+			.postType(PostType.fromString(postType))
+			.location(location)
+			.more(more)
+			.url(url)
 			.share(0L)
+			.views(0L)
+			.flag(flag)
+			.fromDate(from == 0 ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(from), ZoneId.of("Asia/Seoul")))
+			.toDate(to == 0 ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(to), ZoneId.of("Asia/Seoul")))
 			.build();
 	}
 
@@ -155,13 +158,13 @@ public class Post extends BaseEntity {
 			this.title = postUpdateRequest.getTitle();
 		}
 
-		if (StringUtils.hasText(postUpdateRequest.getContent())) {
-			this.content = postUpdateRequest.getContent();
+		if (StringUtils.hasText(postUpdateRequest.getBody())) {
+			this.body = postUpdateRequest.getBody();
 		}
 
-		if (StringUtils.hasText(postUpdateRequest.getImageUrl())) {
-			this.imageUrl = postUpdateRequest.getImageUrl();
-		}
+		if (!CollectionUtils.isEmpty(postUpdateRequest.getImages()))
+			this.images = postUpdateRequest.getImages();
+
 
 		if (StringUtils.hasText(postUpdateRequest.getCouponCode())) {
 			this.couponCode = postUpdateRequest.getCouponCode();
@@ -175,8 +178,8 @@ public class Post extends BaseEntity {
 			this.visibility = postUpdateRequest.getVisibility();
 		}
 
-		if (!CollectionUtils.isEmpty(postUpdateRequest.getUrls())) {
-			this.urls = postUpdateRequest.getUrls();
+		if (StringUtils.hasText(postUpdateRequest.getUrl())) {
+			this.url = postUpdateRequest.getUrl();
 		}
 
 		if (StringUtils.hasText(postUpdateRequest.getFlag())) {
@@ -191,6 +194,14 @@ public class Post extends BaseEntity {
 		if (null != postUpdateRequest.getTo()) {
 			this.toDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(postUpdateRequest.getTo()), ZoneId.systemDefault());
 		}
+
+		if (null != postUpdateRequest.getLocation()) {
+			this.location = postUpdateRequest.getLocation();
+		}
+
+		if (null != postUpdateRequest.getMore()) {
+			this.more = postUpdateRequest.getMore();
+		}
 	}
 
 	public void registerAuthor(User author) {
@@ -198,26 +209,4 @@ public class Post extends BaseEntity {
 		author.addPost(this);
 	}
 
-	@Override
-	public boolean equals(Object object) {
-		if (object == null || getClass() != object.getClass())
-			return false;
-		Post post = (Post)object;
-		return visibility == post.visibility && Objects.equals(id, post.id) && Objects.equals(title,
-			post.title) && Objects.equals(content, post.content) && Objects.equals(imageUrl,
-			post.imageUrl) && Objects.equals(author, post.author) && Objects.equals(views, post.views)
-			&& Objects.equals(couponCode, post.couponCode) && Objects.equals(usefulCount,
-			post.usefulCount) && Objects.equals(disappointCount, post.disappointCount)
-			&& category == post.category && postType == post.postType && Objects.equals(urls, post.urls)
-			&& Objects.equals(likes, post.likes) && Objects.equals(flag, post.flag)
-			&& Objects.equals(fromDate, post.fromDate) && Objects.equals(toDate, post.toDate)
-			&& Objects.equals(share, post.share);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, title, content, imageUrl, author, views, couponCode, usefulCount, disappointCount,
-			category,
-			visibility, postType, urls, likes, flag, fromDate, toDate, share);
-	}
 }

@@ -2,7 +2,6 @@ package me.saechimdaeki.testfeed.user.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,9 +32,11 @@ public class User extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
-	private Long id;
+	private Long mbrNo;
 
-	private String username; // unique(?)
+	private String mbrName; // unique(?)
+
+	private String nickName;
 
 	@Enumerated(EnumType.STRING)
 	private UserType userType;
@@ -43,12 +44,13 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Post> posts = new ArrayList<>();
 
-	private String profileUrl;
+	private String profile;
 
 	@Builder
-	public User(String username, UserType userType) {
-		this.username = username;
+	public User(String mbrName, UserType userType, String nickName) {
+		this.mbrName = mbrName;
 		this.userType = userType;
+		this.nickName = nickName;
 	}
 
 	public void addPost(Post post) {
@@ -60,21 +62,6 @@ public class User extends BaseEntity {
 	}
 
 	public void changeProfileUrl(String profileUrl) {
-		this.profileUrl = profileUrl;
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (object == null || getClass() != object.getClass())
-			return false;
-		User user = (User)object;
-		return Objects.equals(id, user.id) && Objects.equals(username, user.username)
-			&& userType == user.userType && Objects.equals(posts, user.posts) && Objects.equals(
-			profileUrl, user.profileUrl);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, username, userType, posts, profileUrl);
+		this.profile = profileUrl;
 	}
 }

@@ -2,8 +2,8 @@ package me.saechimdaeki.testfeed.feed.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,11 +14,11 @@ import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.saechimdaeki.testfeed.common.util.RedisKeyConstants;
 import me.saechimdaeki.testfeed.feed.domain.Feed;
 import me.saechimdaeki.testfeed.feed.service.port.FeedRepository;
 import me.saechimdaeki.testfeed.feed.service.response.FeedVo;
 import me.saechimdaeki.testfeed.post.domain.Post;
-import me.saechimdaeki.testfeed.post.service.PopularPostService;
 import me.saechimdaeki.testfeed.user.domain.User;
 
 @Service
@@ -28,7 +28,6 @@ import me.saechimdaeki.testfeed.user.domain.User;
 public class FeedService {
 
 	private final FeedRepository feedRepository;
-	private final PopularPostService popularPostService;
 	private final RedisTemplate<String, Long> redisTemplate;
 
 	@Transactional
@@ -45,23 +44,37 @@ public class FeedService {
 
 	public List<FeedVo> getUsersFeeds(String nextCursor) {
 		Pageable pageable = PageRequest.of(0, 5);
-
 		LocalDateTime cursorDateTime = parseNextCursor(nextCursor);
+		List<Feed> feedsByCursor = feedRepository.findFeedsByCursor(cursorDateTime, pageable);
 
-		return feedRepository.findFeedsByCursor(cursorDateTime, pageable)
-			.stream()
-			.map(FeedVo::from)
+		List<Long> postIds = feedsByCursor.stream()
+			.map(feed -> feed.getPost().getId())
 			.toList();
-	}
 
-	public List<FeedVo> getHotFeeds(String nextCursor) {
-		LocalDateTime cursorTime = parseNextCursor(nextCursor);
+		List<String> viewKeys = postIds.stream()
+			.map(RedisKeyConstants::generatePostViewsKey)
+			.toList();
+		List<String> shareKeys = postIds.stream()
+			.map(RedisKeyConstants::generatePostSharesKey)
+			.toList();
+		List<String> likeKeys = postIds.stream()
+			.map(RedisKeyConstants::generatePostLikesKey)
+			.toList();
 
-		List<Post> popularPosts = popularPostService.getPopularPosts(cursorTime);
+		List<Long> views = redisTemplate.opsForValue().multiGet(viewKeys);
+		List<Long> shares = redisTemplate.opsForValue().multiGet(shareKeys);
+		List<Long> likes = redisTemplate.opsForValue().multiGet(likeKeys);
 
-		return popularPosts.stream()
-			.map(FeedVo::from)
-			.collect(Collectors.toList());
+		List<FeedVo> feedVos = new ArrayList<>();
+		for (int i = 0; i < feedsByCursor.size(); i++) {
+			Feed feed = feedsByCursor.get(i);
+			Long view = views.get(i) != null ? views.get(i) : 0L;
+			Long share = shares.get(i) != null ? shares.get(i) : 0L;
+			Long like = likes.get(i) != null ? likes.get(i) : 0L;
+			feedVos.add(FeedVo.from(feed, view, like, share));
+		}
+
+		return feedVos;
 	}
 
 	private LocalDateTime parseNextCursor(String nextCursor) {

@@ -19,34 +19,33 @@ public class FeedVo {
 	private Stats stats;
 	private Meta meta;
 
-
-	public static FeedVo from(FeedEvent feedEvent) {
+	public static FeedVo from(FeedEvent feedEvent, long view, long like, long share) {
 		return FeedVo.builder()
 			.seq(feedEvent.getPostId())
 			.author(feedEvent.getAuthor())
 			.content(FeedData.from(feedEvent))
-			.stats(Stats.from(feedEvent))
+			.stats(Stats.from(view, like, share))
 			.build();
 	}
 
-	public static FeedVo from(Feed feed) {
+	public static FeedVo from(Feed feed, long view, long like, long share) {
 		Post post = feed.getPost();
 		User user = feed.getUser();
 		return FeedVo.builder()
 			.seq(post.getId())
 			.author(UserResponse.from(user))
 			.content(FeedData.from(post))
-			.stats(Stats.from(post))
+			.stats(Stats.from(view, like, share))
 			.meta(Meta.from(post))
 			.build();
 	}
 
-	public static FeedVo from(Post post) {
+	public static FeedVo from(Post post, long view, long like, long share) {
 		return FeedVo.builder()
 			.seq(post.getId())
 			.author(UserResponse.from(post.getAuthor()))
 			.content(FeedData.from(post))
-			.stats(Stats.from(post))
+			.stats(Stats.from(view, like, share))
 			.meta(Meta.from(post))
 			.build();
 	}

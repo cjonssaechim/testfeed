@@ -5,7 +5,7 @@ import java.util.Optional;
 import me.saechimdaeki.testfeed.user.domain.User;
 
 public interface UserRepository {
-	Optional<User> findByUserName(String username);
+	Optional<User> findByMbrName(String mbrName);
 
 	User createUser(User user);
 

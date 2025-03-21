@@ -34,7 +34,7 @@ public class UserService {
 
 	@Transactional
 	public void changeUserRole(final UserChangeRoleRequest userChangeRoleRequest) {
-		final User user = userRepository.findByUserName(userChangeRoleRequest.username())
+		final User user = userRepository.findByMbrName(userChangeRoleRequest.username())
 			.orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 		user.changeUserType(userChangeRoleRequest.userType());
 	}

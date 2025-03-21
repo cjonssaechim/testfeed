@@ -1,5 +1,7 @@
 package me.saechimdaeki.testfeed.post.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,9 +53,9 @@ public class PostController {
 		@Parameter(description = "게시글 정보", required = true)
 		@RequestPart(value = "post") @Valid PostCreateRequest postCreateRequest,
 
-		@Parameter(description = "이미지 파일 (선택 사항)")
-		@RequestPart(value = "image", required = false) MultipartFile image) {
-		return CommonResponse.of(HttpStatus.OK.value(), postService.createPost(postCreateRequest, image));
+		@Parameter(description = "이미지 파일(선택 사항, 여러 개 가능)")
+		@RequestPart(value = "image", required = false) List<MultipartFile> images) {
+		return CommonResponse.of(HttpStatus.OK.value(), postService.createPost(postCreateRequest, images));
 	}
 
 	@Operation(summary = "게시글 수정", description = "기존 게시글을 수정합니다.")

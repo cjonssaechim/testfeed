@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import me.saechimdaeki.testfeed.feed.domain.Feed;
 import me.saechimdaeki.testfeed.feed.service.port.FeedRepository;
 import me.saechimdaeki.testfeed.post.domain.Post;
-import me.saechimdaeki.testfeed.post.service.PopularPostService;
 import me.saechimdaeki.testfeed.user.domain.User;
 import me.saechimdaeki.testfeed.user.domain.UserType;
 
@@ -38,7 +37,7 @@ class FeedServiceTest {
 		.build();
 
 	Post testPost = Post.builder()
-		.content("content")
+		.content("body")
 		.author(testUser)
 		.build();
 

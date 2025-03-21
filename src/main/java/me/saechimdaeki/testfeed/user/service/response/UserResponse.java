@@ -12,10 +12,14 @@ public class UserResponse {
 	private String mbrNo;
 	private String mbrName;
 	private String type;
+	private String nickName;
 	private String profile;
 
 	public static UserResponse from(User user) {
-		return new UserResponse(String.valueOf(user.getId()), user.getUsername(), user.getUserType().name(),
-			user.getProfileUrl());
+		return new UserResponse(String.valueOf(user.getMbrNo()),
+			user.getMbrName(),
+			user.getUserType().name(),
+			user.getNickName(),
+			user.getProfile());
 	}
 }

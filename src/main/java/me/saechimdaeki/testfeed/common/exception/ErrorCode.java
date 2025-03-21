@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "user-E001", "user not found check your username"),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "user-E001", "user not found check your mbrName"),
 
 
 

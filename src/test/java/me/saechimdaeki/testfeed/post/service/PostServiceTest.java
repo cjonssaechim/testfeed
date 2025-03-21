@@ -31,9 +31,9 @@ import me.saechimdaeki.testfeed.user.service.port.UserRepository;
 class PostServiceTest {
 
 	String testTitle = "title";
-	String testContent = "content";
+	String testContent = "body";
 	String testPostType = "biz";
-	String testUsername = "username";
+	String testUsername = "mbrName";
 	String testCategory = "etc";
 	Set<String> testUrls = Set.of("www.google.com", "www.youtube.com");
 	@Mock
@@ -67,11 +67,11 @@ class PostServiceTest {
 		postService.updatePost(postUpdateRequest, 1L);
 		// then
 		assertThat(post.getTitle()).isEqualTo(updateTitle);
-		assertThat(post.getContent()).isEqualTo(updateContent);
-		assertThat(post.getImageUrl()).isEqualTo(updateImageUrl);
+		assertThat(post.getBody()).isEqualTo(updateContent);
+		assertThat(post.getImages()).isEqualTo(updateImageUrl);
 		assertThat(post.getPostType().name()).isEqualToIgnoringCase(updatePostType);
-		assertThat(post.getUrls().size()).isEqualTo(updateUrls.size());
-		assertThat(post.getUrls()).containsAll(updateUrls);
+		assertThat(post.getUrl().size()).isEqualTo(updateUrls.size());
+		assertThat(post.getUrl()).containsAll(updateUrls);
 	}
 
 	@Test

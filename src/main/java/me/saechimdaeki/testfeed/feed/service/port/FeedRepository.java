@@ -1,7 +1,6 @@
 package me.saechimdaeki.testfeed.feed.service.port;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -13,5 +12,5 @@ public interface FeedRepository {
 
 	List<Feed> findFeedsByCommonFeed(Pageable pageable);
 
-	Collection<Feed> findFeedsByCursor(LocalDateTime nextCursor, Pageable pageable);
+	List<Feed> findFeedsByCursor(LocalDateTime nextCursor, Pageable pageable);
 }

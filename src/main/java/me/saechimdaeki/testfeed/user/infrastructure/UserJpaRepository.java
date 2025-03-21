@@ -8,5 +8,5 @@ import me.saechimdaeki.testfeed.user.domain.User;
 
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 
-	Optional<User> findByUsername(String username);
+	Optional<User> findByMbrName(String mbrName);
 }
