@@ -8,16 +8,16 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Category {
-	FASHION("패션뷰티","00001"),
-	FOOD("식품외식","00002"),
-	LIFE("생활건강","00003"),
-	TRIP("여행레저","00004"),
-	CULTURE("영화공연전시","00005"),
-	FURNITURE("가구잡화","00006"),
-	DIGITAL("디지털가전","00007"),
+	FASHION("패션/뷰티","00001"),
+	FOOD("식품/외식","00002"),
+	LIFE("생활/건강","00003"),
+	TRIP("여행/레저","00004"),
+	CULTURE("영화/공연/전시","00005"),
+	FURNITURE("가구/잡화","00006"),
+	DIGITAL("디지털/가전","00007"),
 	INVEST("재테크","00008"),
 	EDU("교육","00009"),
-	GAME("게임앱","00010"),
+	GAME("게임/앱","00010"),
 	CAR("자동차","00011"),
 	ETC("기타","00012");
 
