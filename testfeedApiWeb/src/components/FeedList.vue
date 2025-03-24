@@ -413,7 +413,7 @@ export default {
     async sharePost(postId) {
       try {
         const response = await axios.get(`http://13.124.159.53/posts/${postId}/share`, { timeout: 5000 });
-        if (response.data.resultCode === "001" && response.data.data) {
+        if (response.data.data) {
           const shareUrl = `${window.location.origin}${response.data.data}`;
           await navigator.clipboard.writeText(shareUrl);
           alert("공유 URL이 클립보드에 복사되었습니다: " + shareUrl);
