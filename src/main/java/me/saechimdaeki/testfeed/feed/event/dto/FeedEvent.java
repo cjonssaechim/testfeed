@@ -1,4 +1,4 @@
-package me.saechimdaeki.testfeed.feed.dto;
+package me.saechimdaeki.testfeed.feed.event.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;

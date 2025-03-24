@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
+import me.saechimdaeki.testfeed.feed.event.dto.FeedEvent;
 import me.saechimdaeki.testfeed.post.domain.Category;
 import me.saechimdaeki.testfeed.post.domain.Location;
 import me.saechimdaeki.testfeed.post.domain.MoreInfo;

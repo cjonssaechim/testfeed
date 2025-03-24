@@ -14,7 +14,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
+import me.saechimdaeki.testfeed.feed.event.dto.FeedEvent;
 import me.saechimdaeki.testfeed.feed.service.response.FeedVo;
 
 @Configuration

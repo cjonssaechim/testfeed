@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import me.saechimdaeki.testfeed.feed.domain.Feed;
-import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
+import me.saechimdaeki.testfeed.feed.event.dto.FeedEvent;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.user.domain.User;
 import me.saechimdaeki.testfeed.user.service.response.UserResponse;

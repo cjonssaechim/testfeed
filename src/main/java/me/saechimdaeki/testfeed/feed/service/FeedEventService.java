@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import me.saechimdaeki.testfeed.common.exception.ErrorCode;
 import me.saechimdaeki.testfeed.common.util.RedisKeyConstants;
-import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
+import me.saechimdaeki.testfeed.feed.event.dto.FeedEvent;
 import me.saechimdaeki.testfeed.feed.service.response.FeedVo;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.post.exception.PostException;

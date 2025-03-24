@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
+import me.saechimdaeki.testfeed.feed.event.dto.FeedEvent;
 import me.saechimdaeki.testfeed.post.domain.Post;
 
 @Getter

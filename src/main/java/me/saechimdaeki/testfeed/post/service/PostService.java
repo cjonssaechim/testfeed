@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.saechimdaeki.testfeed.common.exception.ErrorCode;
 import me.saechimdaeki.testfeed.common.file.FileStorageService;
 import me.saechimdaeki.testfeed.common.util.RedisKeyConstants;
-import me.saechimdaeki.testfeed.feed.dto.FeedEvent;
 import me.saechimdaeki.testfeed.post.domain.Post;
+import me.saechimdaeki.testfeed.post.event.dto.PostCreatedEvent;
 import me.saechimdaeki.testfeed.post.exception.PostException;
 import me.saechimdaeki.testfeed.post.service.port.PostRepository;
 import me.saechimdaeki.testfeed.post.service.request.PostCreateRequest;
@@ -38,9 +36,9 @@ public class PostService {
 
 	private final PostRepository postRepository;
 	private final UserRepository userRepository; // TODO 시스템 구성이 어떻게 될지 아직 미지수. 결국엔 이 기능은 빼야 정상.
-	private final KafkaTemplate<String, FeedEvent> kafkaTemplate;
 	private final RedisTemplate<String, Long> redisTemplate;
 	private final FileStorageService fileStorageService;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	// TODO 일단은 postcreate시에만 kafka event 발송.
 	@Transactional
@@ -75,16 +73,10 @@ public class PostService {
 			postCreateRequest.from(),
 			postCreateRequest.to()
 		);
-		
+
 		postRepository.savePost(post);
 
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-			@Override
-			public void afterCommit() {
-				FeedEvent feedEvent = FeedEvent.from(post, user);
-				kafkaTemplate.send("feed", feedEvent);
-			}
-		});
+		applicationEventPublisher.publishEvent(new PostCreatedEvent(post, user));
 
 		return PostResponse.from(post, mbrName);
 	}
