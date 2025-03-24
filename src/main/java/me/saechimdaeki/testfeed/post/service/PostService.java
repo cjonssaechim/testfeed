@@ -114,6 +114,6 @@ public class PostService {
 		Post post = postRepository.findPostByPostId(postId)
 			.orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
 		Long increment = redisTemplate.opsForValue().increment(RedisKeyConstants.generatePostSharesKey(postId));
-		return "/posts" + post.getId();
+		return "/posts/" + post.getId();
 	}
 }
