@@ -21,7 +21,6 @@
                 class="author-profile"
             />
             <span class="author-name">{{ feed.author.mbrName }}</span>
-            <!-- 공유 아이콘 추가 -->
             <img
                 src="/icons/share-icon.png"
                 alt="공유하기"
@@ -32,7 +31,6 @@
           <span class="category">{{ feed.content.category }}</span>
         </div>
 
-        <!-- 이미지 슬라이더 -->
         <div v-if="feed.content.images.length > 0" class="image-slider"
              @touchstart="onTouchStart($event, feed.seq)"
              @touchmove="onTouchMove"
@@ -44,11 +42,9 @@
           <div class="image-wrapper" :style="{ transform: `translateX(-${(currentImageIndex[feed.seq] || 0) * 100}%)` }">
             <div v-for="(image, index) in feed.content.images" :key="index" class="image-container">
               <img :src="image" alt="피드 이미지" class="feed-image" />
-              <!-- flag 표시 -->
               <span v-if="feed.content.flag" class="flag-overlay">{{ feed.content.flag }}</span>
             </div>
           </div>
-          <!-- 도트 인디케이터 -->
           <div class="dots-container">
             <span
                 v-for="(image, index) in feed.content.images"
@@ -76,9 +72,17 @@
             <strong>위도:</strong> {{ feed.content.location.latitude }},
             <strong>경도:</strong> {{ feed.content.location.longitude }}
           </p>
+          <div v-if="feed.content.location.latitude && feed.content.location.longitude" class="map-container">
+            <iframe
+                :src="getStaticMapUrl(feed.content.location.latitude, feed.content.location.longitude)"
+                width="200"
+                height="150"
+                frameborder="0"
+                scrolling="no"
+            ></iframe>
+          </div>
         </div>
 
-        <!-- MoreInfo 표시 -->
         <div class="more-info">
           <a
               v-if="feed.content.more"
@@ -182,7 +186,6 @@
                   class="author-profile"
               />
               <span class="author-name">{{ selectedPost.author.mbrName }}</span>
-              <!-- 모달에서도 공유 아이콘 추가 -->
               <img
                   src="/icons/share-icon.png"
                   alt="공유하기"
@@ -226,6 +229,15 @@
               <strong>위도:</strong> {{ selectedPost.content.location.latitude }},
               <strong>경도:</strong> {{ selectedPost.content.location.longitude }}
             </p>
+            <div v-if="selectedPost.content.location.latitude && selectedPost.content.location.longitude" class="map-container">
+              <iframe
+                  :src="getStaticMapUrl(selectedPost.content.location.latitude, selectedPost.content.location.longitude)"
+                  width="200"
+                  height="150"
+                  frameborder="0"
+                  scrolling="no"
+              ></iframe>
+            </div>
           </div>
 
           <div class="more-info">
@@ -415,13 +427,10 @@ export default {
         const response = await axios.get(`http://13.124.159.53/posts/${postId}/share`, { timeout: 5000 });
         if (response.data.data) {
           const shareUrl = `${window.location.origin}${response.data.data}`;
-
-          // 클립보드 복사 기능
           if (navigator.clipboard && navigator.clipboard.writeText) {
             await navigator.clipboard.writeText(shareUrl);
             alert("공유 URL이 클립보드에 복사되었습니다: " + shareUrl);
           } else {
-            // 폴백: textarea를 생성하여 복사
             const textArea = document.createElement("textarea");
             textArea.value = shareUrl;
             document.body.appendChild(textArea);
@@ -436,8 +445,6 @@ export default {
               document.body.removeChild(textArea);
             }
           }
-
-          // 공유 횟수 업데이트
           const feedIndex = this.feeds.findIndex(f => f.seq === postId);
           if (feedIndex !== -1) {
             this.feeds[feedIndex].stats.share = (this.feeds[feedIndex].stats.share || 0) + 1;
@@ -458,6 +465,10 @@ export default {
     },
     formattedLink(link) {
       return /^https?:\/\//i.test(link) ? link : "https://" + link;
+    },
+    getStaticMapUrl(latitude, longitude) {
+      const zoom = 14;
+      return `https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.01},${latitude - 0.01},${longitude + 0.01},${latitude + 0.01}&layer=mapnik&marker=${latitude},${longitude}`;
     },
     openModal() {
       this.isModalOpen = true;
@@ -767,6 +778,15 @@ export default {
   font-size: 12px;
   color: #666;
   margin-top: 10px;
+}
+
+.map-container {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.map-container iframe {
+  border-radius: 5px;
 }
 
 .more-info {
