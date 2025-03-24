@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.saechimdaeki.testfeed.common.exception.ErrorCode;
 import me.saechimdaeki.testfeed.common.file.FileStorageService;
 import me.saechimdaeki.testfeed.common.util.RedisKeyConstants;
+import me.saechimdaeki.testfeed.feed.service.port.FeedRepository;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.post.event.dto.PostCreatedEvent;
 import me.saechimdaeki.testfeed.post.exception.PostException;
@@ -39,6 +40,7 @@ public class PostService {
 	private final RedisTemplate<String, Long> redisTemplate;
 	private final FileStorageService fileStorageService;
 	private final ApplicationEventPublisher applicationEventPublisher;
+	private final FeedRepository feedRepository;
 
 	// TODO 일단은 postcreate시에만 kafka event 발송.
 	@Transactional
@@ -92,6 +94,7 @@ public class PostService {
 		Post post = postRepository.findPostByPostId(postId)
 			.orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
 		if (post.getAuthor().getMbrName().equals(mbrName) || post.getAuthor().getUserType().equals(UserType.ADMIN)) {
+			feedRepository.deleteByPostId(postId);
 			postRepository.deletePost(post);
 			redisTemplate.delete(RedisKeyConstants.generatePostViewsKey(postId));
 		}

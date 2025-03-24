@@ -30,4 +30,9 @@ public class FeedRepositoryImpl implements FeedRepository {
 	public List<Feed> findFeedsByCursor(LocalDateTime nextCursor, Pageable pageable) {
 		return feedJpaRepository.findFeedsByCursor(nextCursor, pageable);
 	}
+
+	@Override
+	public void deleteByPostId(Long postId) {
+		feedJpaRepository.deleteByPostId(postId);
+	}
 }

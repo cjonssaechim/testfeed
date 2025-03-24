@@ -25,4 +25,6 @@ public interface FeedJpaRepository extends JpaRepository<Feed, Long> {
         ORDER BY f.createdAt DESC
     """)
 	List<Feed> findFeedsByCursor(@Param("nextCursor") LocalDateTime nextCursor, Pageable pageable);
+
+	void deleteByPostId(Long postId);
 }

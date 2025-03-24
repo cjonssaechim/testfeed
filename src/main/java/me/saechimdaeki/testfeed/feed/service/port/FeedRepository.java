@@ -13,4 +13,6 @@ public interface FeedRepository {
 	List<Feed> findFeedsByCommonFeed(Pageable pageable);
 
 	List<Feed> findFeedsByCursor(LocalDateTime nextCursor, Pageable pageable);
+
+	void deleteByPostId(Long postId);
 }
