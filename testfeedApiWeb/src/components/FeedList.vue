@@ -415,9 +415,29 @@ export default {
         const response = await axios.get(`http://13.124.159.53/posts/${postId}/share`, { timeout: 5000 });
         if (response.data.data) {
           const shareUrl = `${window.location.origin}${response.data.data}`;
-          await navigator.clipboard.writeText(shareUrl);
-          alert("공유 URL이 클립보드에 복사되었습니다: " + shareUrl);
 
+          // 클립보드 복사 기능
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(shareUrl);
+            alert("공유 URL이 클립보드에 복사되었습니다: " + shareUrl);
+          } else {
+            // 폴백: textarea를 생성하여 복사
+            const textArea = document.createElement("textarea");
+            textArea.value = shareUrl;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+              document.execCommand("copy");
+              alert("공유 URL이 클립보드에 복사되었습니다: " + shareUrl);
+            } catch (err) {
+              console.error("클립보드 복사 실패:", err);
+              alert("클립보드 복사를 지원하지 않는 환경입니다. URL: " + shareUrl);
+            } finally {
+              document.body.removeChild(textArea);
+            }
+          }
+
+          // 공유 횟수 업데이트
           const feedIndex = this.feeds.findIndex(f => f.seq === postId);
           if (feedIndex !== -1) {
             this.feeds[feedIndex].stats.share = (this.feeds[feedIndex].stats.share || 0) + 1;
