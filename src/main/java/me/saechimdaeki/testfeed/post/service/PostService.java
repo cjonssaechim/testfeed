@@ -60,23 +60,22 @@ public class PostService {
 		}
 
 		PostCreateRequest postCreate = postCreateRequest.withImageUrls(imageUrls);
-		Post post = Post.create(
-			postCreateRequest.title(),
-			postCreateRequest.body(),
-			postCreateRequest.images(),
-			user,
-			postCreateRequest.couponCode(),
-			postCreateRequest.category(),
-			postCreateRequest.postType(),
-			postCreateRequest.location(),
-			postCreateRequest.more(),
-			postCreateRequest.url(),
-			postCreateRequest.flag(),
-			postCreateRequest.from(),
-			postCreateRequest.to()
-		);
 
-		postRepository.savePost(post);
+		Post post = postRepository.savePost(Post.create(
+			postCreate.title(),
+			postCreate.body(),
+			postCreate.images(),
+			user,
+			postCreate.couponCode(),
+			postCreate.category(),
+			postCreate.postType(),
+			postCreate.location(),
+			postCreate.more(),
+			postCreate.url(),
+			postCreate.flag(),
+			postCreate.from(),
+			postCreate.to()
+		));
 
 		applicationEventPublisher.publishEvent(new PostCreatedEvent(post, user));
 
