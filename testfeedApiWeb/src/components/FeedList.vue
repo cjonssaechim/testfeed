@@ -21,6 +21,13 @@
                 class="author-profile"
             />
             <span class="author-name">{{ feed.author.mbrName }}</span>
+            <!-- 공유 아이콘 추가 -->
+            <img
+                src="/icons/share-icon.png"
+                alt="공유하기"
+                class="share-icon"
+                @click.stop="sharePost(feed.seq)"
+            />
           </div>
           <span class="category">{{ feed.content.category }}</span>
         </div>
@@ -59,6 +66,7 @@
         <div class="meta-info">
           <span>👍 좋아요: {{ feed.stats.like }}</span>
           <span>👀 조회수: {{ feed.stats.view }}</span>
+          <span>📤 공유: {{ feed.stats.share || 0 }}</span>
           <span>📅 작성일: {{ formatDate(feed.meta.createdAt) }}</span>
         </div>
 
@@ -174,6 +182,13 @@
                   class="author-profile"
               />
               <span class="author-name">{{ selectedPost.author.mbrName }}</span>
+              <!-- 모달에서도 공유 아이콘 추가 -->
+              <img
+                  src="/icons/share-icon.png"
+                  alt="공유하기"
+                  class="share-icon"
+                  @click.stop="sharePost(selectedPost.seq)"
+              />
             </div>
             <span class="category">{{ selectedPost.content.category }}</span>
           </div>
@@ -201,6 +216,7 @@
           <div class="meta-info">
             <span>👍 좋아요: {{ selectedPost.stats.like }}</span>
             <span>👀 조회수: {{ selectedPost.stats.view }}</span>
+            <span>📤 공유: {{ selectedPost.stats.share || 0 }}</span>
             <span>📅 작성일: {{ formatDate(selectedPost.meta.createdAt) }}</span>
           </div>
 
@@ -300,14 +316,15 @@ export default {
         stats: {
           like: 0,
           view: 0,
+          share: 0,
         },
         meta: {
           createdAt: "",
         },
       },
-      isPostModalOpen: false, // 게시글 상세 모달 상태
-      selectedPost: null, // 선택된 게시글 데이터
-      postLoading: false, // 게시글 로딩 상태
+      isPostModalOpen: false,
+      selectedPost: null,
+      postLoading: false,
     };
   },
   methods: {
@@ -320,7 +337,10 @@ export default {
       try {
         const response = await axios.get("http://13.124.159.53/feeds", { timeout: 5000 });
         if (response.data.resultCode === "001" && response.data.data) {
-          this.feeds = response.data.data.feeds;
+          this.feeds = response.data.data.feeds.map(feed => ({
+            ...feed,
+            stats: { ...feed.stats, share: feed.stats.share || 0 }
+          }));
           this.nextCursor = response.data.data.nextCursor;
         } else {
           this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
@@ -343,7 +363,10 @@ export default {
           timeout: 5000,
         });
         if (response.data.resultCode === "001" && response.data.data) {
-          this.feeds = [...this.feeds, ...response.data.data.feeds];
+          this.feeds = [...this.feeds, ...response.data.data.feeds.map(feed => ({
+            ...feed,
+            stats: { ...feed.stats, share: feed.stats.share || 0 }
+          }))];
           this.nextCursor = response.data.data.nextCursor;
         } else {
           this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
@@ -374,8 +397,8 @@ export default {
               location: response.data.data.location || {},
               more: response.data.data.more || null,
             },
-            stats: { like: 0, view: response.data.data.view }, // 좋아요는 API에 따라 추가 필요
-            meta: { createdAt: new Date().toISOString() }, // 실제 데이터에 따라 수정
+            stats: { like: 0, view: response.data.data.view, share: response.data.data.share || 0 },
+            meta: { createdAt: new Date().toISOString() },
           };
         } else {
           this.errorMessage = "❌ 게시글을 불러오는 데 실패했습니다.";
@@ -385,6 +408,29 @@ export default {
         console.error(error);
       } finally {
         this.postLoading = false;
+      }
+    },
+    async sharePost(postId) {
+      try {
+        const response = await axios.get(`http://13.124.159.53/posts/${postId}/share`, { timeout: 5000 });
+        if (response.data.resultCode === "001" && response.data.data) {
+          const shareUrl = `${window.location.origin}${response.data.data}`;
+          await navigator.clipboard.writeText(shareUrl);
+          alert("공유 URL이 클립보드에 복사되었습니다: " + shareUrl);
+
+          const feedIndex = this.feeds.findIndex(f => f.seq === postId);
+          if (feedIndex !== -1) {
+            this.feeds[feedIndex].stats.share = (this.feeds[feedIndex].stats.share || 0) + 1;
+          }
+          if (this.selectedPost && this.selectedPost.seq === postId) {
+            this.selectedPost.stats.share = (this.selectedPost.stats.share || 0) + 1;
+          }
+        } else {
+          alert("공유에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("공유 오류:", error);
+        alert("공유 중 오류가 발생했습니다.");
       }
     },
     formatDate(dateStr) {
@@ -414,7 +460,7 @@ export default {
           location: { address: "", latitude: "", longitude: "" },
           more: { title: "", link: { type: "", action: "", target: "" } },
         },
-        stats: { like: 0, view: 0 },
+        stats: { like: 0, view: 0, share: 0 },
         meta: { createdAt: "" },
       };
       this.selectedFiles = [];
@@ -603,6 +649,17 @@ export default {
   font-weight: bold;
 }
 
+.share-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.share-icon:hover {
+  opacity: 0.7;
+}
+
 .category {
   font-size: 14px;
   color: #666;
@@ -679,9 +736,11 @@ export default {
 
 .meta-info {
   display: flex;
+  flex-wrap: wrap;
   gap: 15px;
   font-size: 12px;
   color: #666;
+  align-items: center;
 }
 
 .location {

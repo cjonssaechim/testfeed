@@ -28,6 +28,6 @@ public enum Category {
 		return Arrays.stream(values())
 			.filter(category -> category.name().equalsIgnoreCase(name))
 			.findFirst()
-			.orElse(null);
+			.orElse(ETC);
 	}
 }

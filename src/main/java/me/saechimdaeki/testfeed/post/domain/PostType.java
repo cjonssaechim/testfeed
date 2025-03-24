@@ -18,6 +18,6 @@ public enum PostType {
 		return Arrays.stream(values())
 			.filter(posttype -> posttype.name().equalsIgnoreCase(type))
 			.findFirst()
-			.orElse(PostType.NORMAL);
+			.orElse(NORMAL);
 	}
 }

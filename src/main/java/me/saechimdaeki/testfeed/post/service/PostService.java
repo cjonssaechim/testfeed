@@ -105,7 +105,6 @@ public class PostService {
 
 		Long increment = redisTemplate.opsForValue().increment(RedisKeyConstants.generatePostViewsKey(postId));
 
-		// TODO refactoring (현재 조회수는 redis로)
 		PostResponse postResponse = PostResponse.from(post, post.getAuthor().getMbrName());
 		postResponse.changeViews(increment);
 		return postResponse;
@@ -115,6 +114,6 @@ public class PostService {
 		Post post = postRepository.findPostByPostId(postId)
 			.orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
 		Long increment = redisTemplate.opsForValue().increment(RedisKeyConstants.generatePostSharesKey(postId));
-		return "공유할 게시글의 shortUrl?";
+		return "/posts" + post.getId();
 	}
 }
