@@ -26,15 +26,11 @@
           <span class="category">{{ feed.content.category }} ({{ feed.content.categoryId }})</span>
         </div>
 
-        <!-- 이미지와 flag -->
-        <div class="image-container">
-          <img
-              v-if="feed.content.images.length > 0"
-              :src="`${feed.content.images[0]}`"
-              alt="피드 이미지"
-              class="feed-image"
-          />
-          <div v-if="feed.content.flag" class="flag">{{ feed.content.flag }}</div>
+        <!-- 이미지 슬라이드 -->
+        <div v-if="feed.content.images.length > 0" class="image-slider">
+          <div class="image-slide" v-for="(image, index) in feed.content.images" :key="index">
+            <img :src="image" alt="피드 이미지" class="feed-image" />
+          </div>
         </div>
 
         <h3 class="feed-title">{{ feed.content.title }}</h3>
@@ -44,6 +40,19 @@
           <span>👍 좋아요: {{ feed.stats.like }}</span>
           <span>👀 조회수: {{ feed.stats.view }}</span>
           <span>📅 작성일: {{ formatDate(feed.meta.createdAt) }}</span>
+        </div>
+
+        <!-- more 버튼 처리 -->
+        <div v-if="feed.content.more">
+          <a :href="formattedLink(feed.content.more.link.action)" target="_blank" class="more-link">{{ feed.content.more.title }}</a>
+        </div>
+
+        <!-- 위치 정보 처리 -->
+        <div v-if="feed.content.location">
+          <p class="location">
+            📍 <strong>위치:</strong> {{ feed.content.location.address }}<br>
+            <strong>위도:</strong> {{ feed.content.location.latitude }}, <strong>경도:</strong> {{ feed.content.location.longitude }}
+          </p>
         </div>
       </div>
     </div>
@@ -139,13 +148,17 @@ export default {
     formatDate(dateStr) {
       return new Date(dateStr).toLocaleString();
     },
+
+    formattedLink(link) {
+      // http:// 또는 https://가 없으면 https://를 붙여서 반환
+      return /^https?:\/\//i.test(link) ? link : 'https://' + link;
+    }
   },
   mounted() {
     this.fetchFeeds();
   },
 };
 </script>
-
 
 <style>
 .feed-container {
@@ -201,27 +214,22 @@ export default {
   color: darkred;
 }
 
-.image-container {
-  position: relative;
+.image-slider {
+  display: flex;
+  overflow-x: scroll;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.image-slide {
+  flex: 0 0 auto;
 }
 
 .feed-image {
   width: 100%;
-  height: auto;
+  height: 200px;
   object-fit: cover;
   border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.flag {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
 }
 
 .feed-title {
@@ -250,5 +258,20 @@ export default {
 
 .more-button {
   margin-top: 20px;
+}
+
+.more-link {
+  font-size: 14px;
+  color: blue;
+  text-decoration: underline;
+}
+
+.location {
+  font-size: 14px;
+  color: darkcyan;
+}
+
+strong {
+  font-weight: bold;
 }
 </style>
