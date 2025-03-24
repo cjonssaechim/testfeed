@@ -25,7 +25,7 @@
           <span class="category">{{ feed.content.category }}</span>
         </div>
 
-        <!-- 이미지 슬라이더 (슬라이드 애니메이션 + 도트 인디케이터 추가) -->
+        <!-- 이미지 슬라이더 -->
         <div v-if="feed.content.images.length > 0" class="image-slider"
              @touchstart="onTouchStart($event, feed.seq)"
              @touchmove="onTouchMove"
@@ -35,13 +35,11 @@
              @mouseup="onMouseUp($event, feed.seq)"
              @mouseleave="onMouseUp($event, feed.seq)">
           <div class="image-wrapper" :style="{ transform: `translateX(-${(currentImageIndex[feed.seq] || 0) * 100}%)` }">
-            <img
-                v-for="(image, index) in feed.content.images"
-                :key="index"
-                :src="image"
-                alt="피드 이미지"
-                class="feed-image"
-            />
+            <div v-for="(image, index) in feed.content.images" :key="index" class="image-container">
+              <img :src="image" alt="피드 이미지" class="feed-image" />
+              <!-- flag 표시 -->
+              <span v-if="feed.content.flag" class="flag-overlay">{{ feed.content.flag }}</span>
+            </div>
           </div>
           <!-- 도트 인디케이터 -->
           <div class="dots-container">
@@ -543,20 +541,39 @@ export default {
   position: relative;
   width: 100%;
   overflow: hidden;
-  user-select: none; /* 드래그 중 텍스트 선택 방지 */
+  user-select: none;
 }
 
 .image-wrapper {
   display: flex;
-  transition: transform 0.3s ease; /* 슬라이드 애니메이션 */
+  transition: transform 0.3s ease;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  flex: 0 0 100%;
 }
 
 .feed-image {
   width: 100%;
-  flex: 0 0 100%; /* 각 이미지가 전체 너비를 차지 */
   height: auto;
   object-fit: cover;
-  pointer-events: auto; /* 이미지에서 이벤트 감지 가능 */
+  pointer-events: auto;
+}
+
+/* flag 스타일 */
+.flag-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  z-index: 10;
 }
 
 /* 도트 인디케이터 스타일 */
