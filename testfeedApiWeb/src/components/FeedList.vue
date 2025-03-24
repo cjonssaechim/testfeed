@@ -11,7 +11,7 @@
 
     <!-- 피드 목록 -->
     <div v-if="!loading && feeds.length > 0" class="feed-list">
-      <div v-for="feed in feeds" :key="feed.seq" class="feed-card" :data-feed-seq="feed.seq">
+      <div v-for="feed in feeds" :key="feed.seq" class="feed-card" :data-feed-seq="feed.seq" @click="fetchPost(feed.seq)">
         <div class="feed-header">
           <div class="author-info">
             <img
@@ -48,7 +48,7 @@
                 :key="index"
                 class="dot"
                 :class="{ active: (currentImageIndex[feed.seq] || 0) === index }"
-                @click="goToImage(feed.seq, index)"
+                @click.stop="goToImage(feed.seq, index)"
             ></span>
           </div>
         </div>
@@ -77,6 +77,7 @@
               :href="formattedLink(feed.content.more.link.action)"
               target="_blank"
               class="more-link"
+              @click.stop
           >
             {{ feed.content.more.title }}
           </a>
@@ -92,8 +93,8 @@
     <p v-else-if="!loading && feeds.length === 0">❌ 불러온 피드가 없습니다.</p>
 
     <!-- 글쓰기 모달 -->
-    <div v-if="isModalOpen" class="modal-overlay">
-      <div class="modal-content">
+    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
         <h3>글쓰기</h3>
         <form @submit.prevent="submitPost">
           <div>
@@ -157,6 +158,75 @@
         </form>
       </div>
     </div>
+
+    <!-- 게시글 상세 모달 -->
+    <div v-if="isPostModalOpen" class="modal-overlay" @click="closePostModal">
+      <div class="modal-content" @click.stop>
+        <h3>{{ selectedPost?.content.title }}</h3>
+        <div v-if="postLoading">⏳ 데이터를 불러오는 중...</div>
+        <div v-else-if="selectedPost" class="post-detail">
+          <div class="feed-header">
+            <div class="author-info">
+              <img
+                  v-if="selectedPost.author.profile"
+                  :src="selectedPost.author.profile"
+                  alt="작성자 프로필"
+                  class="author-profile"
+              />
+              <span class="author-name">{{ selectedPost.author.mbrName }}</span>
+            </div>
+            <span class="category">{{ selectedPost.content.category }}</span>
+          </div>
+
+          <div v-if="selectedPost.content.images.length > 0" class="image-slider">
+            <div class="image-wrapper" :style="{ transform: `translateX(-${(currentImageIndex[selectedPost.seq] || 0) * 100}%)` }">
+              <div v-for="(image, index) in selectedPost.content.images" :key="index" class="image-container">
+                <img :src="image" alt="피드 이미지" class="feed-image" />
+                <span v-if="selectedPost.content.flag" class="flag-overlay">{{ selectedPost.content.flag }}</span>
+              </div>
+            </div>
+            <div class="dots-container">
+              <span
+                  v-for="(image, index) in selectedPost.content.images"
+                  :key="index"
+                  class="dot"
+                  :class="{ active: (currentImageIndex[selectedPost.seq] || 0) === index }"
+                  @click="goToImage(selectedPost.seq, index)"
+              ></span>
+            </div>
+          </div>
+
+          <p class="feed-content">{{ selectedPost.content.body }}</p>
+
+          <div class="meta-info">
+            <span>👍 좋아요: {{ selectedPost.stats.like }}</span>
+            <span>👀 조회수: {{ selectedPost.stats.view }}</span>
+            <span>📅 작성일: {{ formatDate(selectedPost.meta.createdAt) }}</span>
+          </div>
+
+          <div v-if="selectedPost.content.location">
+            <p class="location">
+              📍 <strong>위치:</strong> {{ selectedPost.content.location.address }}<br />
+              <strong>위도:</strong> {{ selectedPost.content.location.latitude }},
+              <strong>경도:</strong> {{ selectedPost.content.location.longitude }}
+            </p>
+          </div>
+
+          <div class="more-info">
+            <a
+                v-if="selectedPost.content.more"
+                :href="formattedLink(selectedPost.content.more.link.action)"
+                target="_blank"
+                class="more-link"
+            >
+              {{ selectedPost.content.more.title }}
+            </a>
+            <span v-else>More Info 없음</span>
+          </div>
+        </div>
+        <button @click="closePostModal" type="button">닫기</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -173,10 +243,10 @@ export default {
       isModalOpen: false,
       selectedFiles: [],
       currentImageIndex: {},
-      startX: 0, // 드래그 시작 위치
-      currentX: 0, // 드래그 중 현재 위치
-      isDragging: false, // 드래그 중인지 여부
-      currentFeedSeq: null, // 현재 드래그 중인 피드의 seq
+      startX: 0,
+      currentX: 0,
+      isDragging: false,
+      currentFeedSeq: null,
       postTypes: [
         { value: "AD", label: "광고 게시글" },
         { value: "EVENT", label: "이벤트 게시글" },
@@ -235,6 +305,9 @@ export default {
           createdAt: "",
         },
       },
+      isPostModalOpen: false, // 게시글 상세 모달 상태
+      selectedPost: null, // 선택된 게시글 데이터
+      postLoading: false, // 게시글 로딩 상태
     };
   },
   methods: {
@@ -281,6 +354,39 @@ export default {
         this.loading = false;
       }
     },
+    async fetchPost(seq) {
+      this.postLoading = true;
+      this.isPostModalOpen = true;
+      this.selectedPost = null;
+
+      try {
+        const response = await axios.get(`http://13.124.159.53/posts/${seq}`, { timeout: 5000 });
+        if (response.data.resultCode === "001" && response.data.data) {
+          this.selectedPost = {
+            seq,
+            author: { mbrName: response.data.data.mbrName, profile: "" },
+            content: {
+              title: response.data.data.title,
+              body: response.data.data.body,
+              category: response.data.data.category,
+              images: response.data.data.images,
+              flag: response.data.data.flag,
+              location: response.data.data.location || {},
+              more: response.data.data.more || null,
+            },
+            stats: { like: 0, view: response.data.data.view }, // 좋아요는 API에 따라 추가 필요
+            meta: { createdAt: new Date().toISOString() }, // 실제 데이터에 따라 수정
+          };
+        } else {
+          this.errorMessage = "❌ 게시글을 불러오는 데 실패했습니다.";
+        }
+      } catch (error) {
+        this.errorMessage = "❌ 게시글을 불러오는 데 실패했습니다.";
+        console.error(error);
+      } finally {
+        this.postLoading = false;
+      }
+    },
     formatDate(dateStr) {
       return new Date(dateStr).toLocaleString();
     },
@@ -293,10 +399,7 @@ export default {
     closeModal() {
       this.isModalOpen = false;
       this.newPost = {
-        author: {
-          mbrName: "saechimdaeki",
-          profile: "",
-        },
+        author: { mbrName: "saechimdaeki", profile: "" },
         content: {
           title: "",
           body: "",
@@ -308,29 +411,17 @@ export default {
           from: "",
           to: "",
           images: [],
-          location: {
-            address: "",
-            latitude: "",
-            longitude: "",
-          },
-          more: {
-            title: "",
-            link: {
-              type: "",
-              action: "",
-              target: "",
-            },
-          },
+          location: { address: "", latitude: "", longitude: "" },
+          more: { title: "", link: { type: "", action: "", target: "" } },
         },
-        stats: {
-          like: 0,
-          view: 0,
-        },
-        meta: {
-          createdAt: "",
-        },
+        stats: { like: 0, view: 0 },
+        meta: { createdAt: "" },
       };
       this.selectedFiles = [];
+    },
+    closePostModal() {
+      this.isPostModalOpen = false;
+      this.selectedPost = null;
     },
     handleFileUpload(event) {
       this.selectedFiles = Array.from(event.target.files);
@@ -338,7 +429,6 @@ export default {
     async submitPost() {
       try {
         const formData = new FormData();
-
         const postCreateRequest = {
           title: this.newPost.content.title,
           body: this.newPost.content.body,
@@ -352,35 +442,24 @@ export default {
           to: this.newPost.content.to ? parseInt(this.newPost.content.to) : 0,
           location: {
             address: this.newPost.content.location.address || "",
-            latitude: this.newPost.content.location.latitude
-                ? parseFloat(this.newPost.content.location.latitude)
-                : null,
-            longitude: this.newPost.content.location.longitude
-                ? parseFloat(this.newPost.content.location.longitude)
-                : null,
+            latitude: this.newPost.content.location.latitude ? parseFloat(this.newPost.content.location.latitude) : null,
+            longitude: this.newPost.content.location.longitude ? parseFloat(this.newPost.content.location.longitude) : null,
           },
-          more: this.newPost.content.more && this.newPost.content.more.title
-              ? {
-                title: this.newPost.content.more.title,
-                link: {
-                  type: this.newPost.content.more.link.type || "",
-                  action: this.newPost.content.more.link.action || "",
-                  target: this.newPost.content.more.link.target || "",
-                },
-              }
-              : null,
+          more: this.newPost.content.more && this.newPost.content.more.title ? {
+            title: this.newPost.content.more.title,
+            link: {
+              type: this.newPost.content.more.link.type || "",
+              action: this.newPost.content.more.link.action || "",
+              target: this.newPost.content.more.link.target || "",
+            },
+          } : null,
         };
 
         formData.append("post", new Blob([JSON.stringify(postCreateRequest)], { type: "application/json" }));
-
-        this.selectedFiles.forEach((file) => {
-          formData.append("image", file);
-        });
+        this.selectedFiles.forEach((file) => formData.append("image", file));
 
         const response = await axios.post("http://13.124.159.53/posts", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
           timeout: 5000,
         });
 
@@ -396,27 +475,22 @@ export default {
         alert("게시글 작성 중 오류가 발생했습니다.");
       }
     },
-    // 이미지 슬라이더 관련 메서드
     prevImage(feedSeq) {
-      const feed = this.feeds.find((f) => f.seq === feedSeq);
+      const feed = this.feeds.find((f) => f.seq === feedSeq) || this.selectedPost;
       if (feed && feed.content.images.length > 0) {
         this.currentImageIndex[feedSeq] = (this.currentImageIndex[feedSeq] || 0) - 1;
-        if (this.currentImageIndex[feedSeq] < 0) {
-          this.currentImageIndex[feedSeq] = feed.content.images.length - 1;
-        }
+        if (this.currentImageIndex[feedSeq] < 0) this.currentImageIndex[feedSeq] = feed.content.images.length - 1;
       }
     },
     nextImage(feedSeq) {
-      const feed = this.feeds.find((f) => f.seq === feedSeq);
+      const feed = this.feeds.find((f) => f.seq === feedSeq) || this.selectedPost;
       if (feed && feed.content.images.length > 0) {
-        this.currentImageIndex[feedSeq] =
-            ((this.currentImageIndex[feedSeq] || 0) + 1) % feed.content.images.length;
+        this.currentImageIndex[feedSeq] = ((this.currentImageIndex[feedSeq] || 0) + 1) % feed.content.images.length;
       }
     },
     goToImage(feedSeq, index) {
       this.currentImageIndex[feedSeq] = index;
     },
-    // 드래그/스와이프 관련 메서드
     onTouchStart(event, feedSeq) {
       this.startX = event.touches[0].clientX;
       this.isDragging = true;
@@ -429,13 +503,9 @@ export default {
     onTouchEnd(event, feedSeq) {
       if (!this.isDragging) return;
       this.isDragging = false;
-
       const deltaX = this.currentX - this.startX;
-      if (deltaX > 50) {
-        this.prevImage(feedSeq);
-      } else if (deltaX < -50) {
-        this.nextImage(feedSeq);
-      }
+      if (deltaX > 50) this.prevImage(feedSeq);
+      else if (deltaX < -50) this.nextImage(feedSeq);
     },
     onMouseDown(event, feedSeq) {
       this.startX = event.clientX;
@@ -449,13 +519,9 @@ export default {
     onMouseUp(event, feedSeq) {
       if (!this.isDragging) return;
       this.isDragging = false;
-
       const deltaX = this.currentX - this.startX;
-      if (deltaX > 50) {
-        this.prevImage(feedSeq);
-      } else if (deltaX < -50) {
-        this.nextImage(feedSeq);
-      }
+      if (deltaX > 50) this.prevImage(feedSeq);
+      else if (deltaX < -50) this.nextImage(feedSeq);
     },
   },
   mounted() {
@@ -507,6 +573,11 @@ export default {
   border-radius: 10px;
   padding: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.feed-card:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .feed-header {
@@ -562,7 +633,6 @@ export default {
   pointer-events: auto;
 }
 
-/* flag 스타일 */
 .flag-overlay {
   position: absolute;
   top: 10px;
@@ -576,7 +646,6 @@ export default {
   z-index: 10;
 }
 
-/* 도트 인디케이터 스타일 */
 .dots-container {
   display: flex;
   justify-content: center;
@@ -742,5 +811,9 @@ button[type="button"] {
 
 button[type="button"]:hover {
   background-color: #c82333;
+}
+
+.post-detail {
+  margin-top: 20px;
 }
 </style>

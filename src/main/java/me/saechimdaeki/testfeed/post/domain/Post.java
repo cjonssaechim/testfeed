@@ -188,11 +188,11 @@ public class Post extends BaseEntity {
 
 		if (null != postUpdateRequest.getFrom()) {
 			this.fromDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(postUpdateRequest.getFrom()),
-				ZoneId.systemDefault());
+				ZoneId.of("Asia/Seoul"));
 		}
 
 		if (null != postUpdateRequest.getTo()) {
-			this.toDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(postUpdateRequest.getTo()), ZoneId.systemDefault());
+			this.toDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(postUpdateRequest.getTo()), ZoneId.of("Asia/Seoul"));
 		}
 
 		if (null != postUpdateRequest.getLocation()) {

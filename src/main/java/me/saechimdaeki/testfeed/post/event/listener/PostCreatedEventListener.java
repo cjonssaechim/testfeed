@@ -17,6 +17,7 @@ public class PostCreatedEventListener {
 
     private final KafkaTemplate<String, FeedEvent> kafkaTemplate;
 
+    // TODO 실제로는 kafka broker의 신뢰성과 관련하여 transactional outbox패턴을 도입하거나 하는것도 좋은 방법이지 않을지 고민 중.
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePostCreated(PostCreatedEvent event) {
         Post post = event.post();
