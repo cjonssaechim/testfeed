@@ -4,7 +4,6 @@
 
     <div class="button-group">
       <button @click="fetchFeeds">📄 일반 피드 조회</button>
-      <button @click="fetchHotFeeds">🔥 인기 피드 조회</button>
     </div>
 
     <p v-if="loading">⏳ 데이터를 불러오는 중...</p>
@@ -99,28 +98,6 @@ export default {
         this.loading = false;
       }
     },
-
-    async fetchHotFeeds() {
-      this.loading = true;
-      this.errorMessage = "";
-      this.feeds = [];
-      this.nextCursor = null;
-
-      try {
-        const response = await axios.get("http://13.124.159.53/feeds/hot", { timeout: 5000 });
-        if (response.data.resultCode === "001" && response.data.data) {
-          this.feeds = response.data.data.feeds;
-          this.nextCursor = response.data.data.nextCursor;
-        } else {
-          this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
-        }
-      } catch (error) {
-        this.errorMessage = "❌ 데이터를 불러오는 데 실패했습니다.";
-      } finally {
-        this.loading = false;
-      }
-    },
-
     async loadMoreFeeds() {
       if (!this.nextCursor) return;
 
