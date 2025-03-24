@@ -60,7 +60,22 @@ public class PostService {
 		}
 
 		PostCreateRequest postCreate = postCreateRequest.withImageUrls(imageUrls);
-		Post post = PostCreateRequest.createPost(postCreate, user);
+		Post post = Post.create(
+			postCreateRequest.title(),
+			postCreateRequest.body(),
+			postCreateRequest.images(),
+			user,
+			postCreateRequest.couponCode(),
+			postCreateRequest.category(),
+			postCreateRequest.postType(),
+			postCreateRequest.location(),
+			postCreateRequest.more(),
+			postCreateRequest.url(),
+			postCreateRequest.flag(),
+			postCreateRequest.from(),
+			postCreateRequest.to()
+		);
+		
 		postRepository.savePost(post);
 
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {

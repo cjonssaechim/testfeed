@@ -18,6 +18,7 @@ public class FeedResponse {
 		this.feeds = feeds;
 		if (!CollectionUtils.isEmpty(feeds)) {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-			this.nextCursor = feeds.get(feeds.size() - 1).getMeta().getCreatedAt().format(formatter);		}
+			this.nextCursor = feeds.get(feeds.size() - 1).getMeta().getCreatedAt().format(formatter);
+		}
 	}
 }
