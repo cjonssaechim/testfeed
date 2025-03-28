@@ -202,6 +202,10 @@ public class Post extends BaseEntity {
 		if (null != postUpdateRequest.getMore()) {
 			this.more = postUpdateRequest.getMore();
 		}
+
+		if (StringUtils.hasText(postUpdateRequest.getCategory())) {
+			this.category = Category.fromString(postUpdateRequest.getCategory());
+		}
 	}
 
 	public void registerAuthor(User author) {

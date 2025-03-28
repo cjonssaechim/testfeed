@@ -15,6 +15,7 @@ public class PostUpdateRequest {
 	private List<String> images;
 	private String couponCode;
 	private String postType;
+	private String category;
 	private Boolean visibility;
 	private String url;
 	private String flag;

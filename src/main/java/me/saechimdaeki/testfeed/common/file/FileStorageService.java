@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class FileStorageService {
 
-	@Value("${image.url}")
+	@Value("${image.url:images}")
 	private String imagePath;
 
 	@Value("${host}")

@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: test
+  datasource:
+    driver-class-name: org.h2.Driver
+host: localhost
+kafka:
+  host: localhost:9092
+  consumer-group: feed
+  topic: feed

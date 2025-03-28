@@ -36,8 +36,4 @@ public class PostRepositoryImpl implements PostRepository {
 		postJpaRepository.delete(post);
 	}
 
-	@Override
-	public List<Post> findAllPostByPostIds(Collection<Long> postIds) {
-		return postJpaRepository.findAllByPostIds(postIds);
-	}
 }

@@ -74,7 +74,7 @@ public class PostController {
 
 	@Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
 	@ApiResponses({
-		@ApiResponse(responseCode = "204", description = "게시글 삭제 성공"),
+		@ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
 		@ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음",
 			content = @Content(schema = @Schema(implementation = ErrorResponseEntity.class))),
 	})
