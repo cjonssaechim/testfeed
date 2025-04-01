@@ -40,8 +40,8 @@ public class PostLikeController {
 	@PostMapping("/{postId}")
 	public CommonResponse<Void> postLike(
 		@Parameter(description = "좋아요할 게시글 ID", example = "1") @PathVariable Long postId,
-		@Parameter(description = "좋아요를 누르는 사용자 이름", example = "saechimdaeki") @RequestParam("username") String username) {
-		postLikeService.likePost(postId, username);
+		@Parameter(description = "좋아요를 누르는 사용자 이름", example = "saechimdaeki") @RequestParam("mbrName") String mbrName) {
+		postLikeService.likePost(postId, mbrName);
 		return CommonResponse.of(HttpStatus.OK.value(), null);
 	}
 
@@ -56,7 +56,7 @@ public class PostLikeController {
 	@DeleteMapping("/{postId}")
 	public CommonResponse<Void> deletePostLike(
 		@Parameter(description = "좋아요를 취소할 게시글 ID", example = "1") @PathVariable Long postId,
-		@Parameter(description = "좋아요를 취소하는 사용자 이름", example = "saechimdaeki") @RequestParam("username") String username) {
+		@Parameter(description = "좋아요를 취소하는 사용자 이름", example = "saechimdaeki") @RequestParam("mbrName") String username) {
 		postLikeService.unlikePost(postId, username);
 		return CommonResponse.of(HttpStatus.OK.value(), null);
 	}
