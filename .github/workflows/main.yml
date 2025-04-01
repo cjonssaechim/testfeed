@@ -25,8 +25,9 @@ jobs:
       - name: Run tests and generate coverage
         run: ./gradlew clean test jacocoTestReport
 
-      - name: Upload coverage to Codecov (no token needed)
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}  # <- secret 등록한 토큰
           files: build/reports/jacoco/test/jacocoTestReport.xml
           fail_ci_if_error: true
