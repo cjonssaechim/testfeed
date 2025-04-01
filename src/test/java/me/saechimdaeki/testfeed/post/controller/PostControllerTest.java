@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -83,6 +84,26 @@ class PostControllerTest {
 	}
 
 	@Test
+	@DisplayName("글 작성 시 title이 비어있다면 예외를 발생시켜야 한다")
+	void createPostTest_with_validationException() throws Exception {
+
+		// given
+
+		PostCreateRequest postCreateRequest = new PostCreateRequest("", body, null, postType, null, mbrName, null,
+			null, null, 0, 0, null, null);
+
+		String jsonString = objectMapper.writeValueAsString(postCreateRequest);
+
+		MockPart postPart = new MockPart("post", jsonString.getBytes());
+		postPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+		// when then
+		mockMvc.perform(multipart("/posts")
+				.part(postPart))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	@DisplayName("검증되지 않은 유저가 글을 작성시 에러를 발생시킨다")
 	void createPostTest_With_UnAuthenticatedUser() throws Exception {
 
@@ -133,6 +154,8 @@ class PostControllerTest {
 		assertThat(findedPost.getBody()).isEqualTo(changedBody);
 		assertThat(findedPost.getPostType()).isEqualTo(PostType.fromString(postType));
 		assertThat(findedPost.getCategory()).isEqualTo(Category.fromString(changedCategory));
+		assertThat(findedPost.getCreatedAt()).isBefore(LocalDateTime.now());
+		assertThat(findedPost.getUpdatedAt()).isBefore(LocalDateTime.now());
 	}
 
 	@Test
@@ -212,6 +235,8 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.code").value(ErrorCode.POST_NOT_FOUND.getCode()))
 			.andExpect(jsonPath("$.message").value(ErrorCode.POST_NOT_FOUND.getMessage()));
 	}
+
+
 
 	private Post saveTestPost(String category) {
 		Post post = new Post(title, body, null, user, null, Category.fromString(category),

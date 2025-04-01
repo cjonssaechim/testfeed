@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +42,7 @@ class FileStorageServiceTest {
 	}
 
 	@Test
+	@DisplayName("file 저장 성공시 url은 지정한 host의 주소로 시작해야한다")
 	void saveFile_success() throws IOException {
 		MultipartFile mockFile = new MockMultipartFile(
 			"file",
@@ -56,6 +58,7 @@ class FileStorageServiceTest {
 	}
 
 	@Test
+	@DisplayName("빈 파일을 저장하려고 할 시 예외를 발생시켜야한다")
 	void saveFile_throwsException_onEmptyFile() {
 		MultipartFile emptyFile = new MockMultipartFile("file", "empty.png", "image/png", new byte[0]);
 
