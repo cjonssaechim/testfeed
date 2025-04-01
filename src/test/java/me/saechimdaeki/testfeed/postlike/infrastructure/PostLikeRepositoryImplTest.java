@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import me.saechimdaeki.testfeed.annotation.IntegrationTest;
 import me.saechimdaeki.testfeed.post.domain.Post;
 import me.saechimdaeki.testfeed.post.infrastructure.PostJpaRepository;
 import me.saechimdaeki.testfeed.postlike.domain.PostLike;
@@ -17,6 +18,7 @@ import me.saechimdaeki.testfeed.user.domain.UserType;
 import me.saechimdaeki.testfeed.user.infrastructure.UserJpaRepository;
 
 @SpringBootTest
+@IntegrationTest
 class PostLikeRepositoryImplTest {
 
 	@Autowired

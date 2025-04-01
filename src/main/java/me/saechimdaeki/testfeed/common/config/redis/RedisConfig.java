@@ -3,6 +3,7 @@ package me.saechimdaeki.testfeed.common.config.redis;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -18,6 +19,7 @@ import me.saechimdaeki.testfeed.feed.event.dto.FeedEvent;
 import me.saechimdaeki.testfeed.feed.service.response.FeedVo;
 
 @Configuration
+@Profile("!test")
 public class RedisConfig {
 
 	@Value("${spring.data.redis.host:localhost}")
@@ -33,7 +35,7 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public RedisTemplate<String, Long> redisTemplateForLong(RedisConnectionFactory connectionFactory) {
+	public RedisTemplate<String, Long> redisTemplate(RedisConnectionFactory connectionFactory) {
 		RedisTemplate<String, Long> template = new RedisTemplate<>();
 		template.setConnectionFactory(connectionFactory);
 
