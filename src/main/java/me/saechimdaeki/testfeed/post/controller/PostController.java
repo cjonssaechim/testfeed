@@ -81,8 +81,8 @@ public class PostController {
 	@DeleteMapping("/{postId}")
 	public CommonResponse<?> deletePost(
 		@Parameter(description = "삭제할 게시글 ID") @PathVariable Long postId,
-		@Parameter(description = "작성자 이름") @RequestParam String username) {
-		postService.deletePost(postId, username);
+		@Parameter(description = "작성자 이름") @RequestParam String mbrName) {
+		postService.deletePost(postId, mbrName);
 		return CommonResponse.of(HttpStatus.NO_CONTENT.value(), null);
 	}
 

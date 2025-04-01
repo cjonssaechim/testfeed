@@ -168,7 +168,7 @@ class PostControllerTest {
 		// when
 
 		mockMvc.perform(delete("/posts/{postId}", savedPost.getId())
-				.param("username", mbrName))
+				.param("mbrName", mbrName))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.resultCode").value("003"))
 			.andExpect(jsonPath("$.data").doesNotExist());

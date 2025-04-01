@@ -5,9 +5,9 @@ import jakarta.validation.constraints.NotEmpty;
 
 public record UserChangeRoleRequest(
 	@NotEmpty
-	String username,
+	String mbrName,
 	@NotEmpty
 	@Schema(description = "유저 타입 (ADMIN, USER, BIZUSER 중 하나)", example = "USER", allowableValues = {"ADMIN", "USER", "BIZUSER"})
-	String userType
+	String type
 ) {
 }
